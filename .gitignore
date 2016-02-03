@@ -1,0 +1,15 @@
+Makefile
+*.cbp
+*.workspace
+*.make
+*.qbs
+obj/
+
+# Ignore all of bin/ except bin/data/
+!bin/
+bin/*
+!bin/data/
+bin/data/.gitkeep
+
+buildLog
+runLog
