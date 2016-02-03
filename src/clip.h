@@ -52,6 +52,17 @@ class Clip {
     void update(int x, int y) {
         if (isSelected) {
             start = x - selectedPos;
+
+            if (start < 0) {
+                start = 0;
+            }
+            else if (right != NULL && start + length > right->start) {
+                start = right->start - length;
+            }
+            else if (left != NULL && start < left->start + left->length) {
+                start = left->start + left->length;
+            }
+
             reconstruct();
         }
     }

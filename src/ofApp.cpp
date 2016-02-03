@@ -15,10 +15,13 @@ void ofApp::setup() {
 
     /* Setup clips */
     first = new Clip(0, 100, "sun", palanquinRegular);
-    last = new Clip(150, 200, "narves1", palanquinRegular);
+    Clip *middle = new Clip(120, 50, "horses", palanquinRegular);
+    last = new Clip(200, 300, "narves1", palanquinRegular);
 
-    first->right = last;
-    last->left = first;
+    first->right = middle;
+    middle->left = first;
+    middle->right = last;
+    last->left = middle;
 }
 
 void ofApp::update() {
