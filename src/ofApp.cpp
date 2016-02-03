@@ -31,6 +31,15 @@ void ofApp::update() {
             timelinePos += 1;
         }
     }
+
+    int x = mouseX + timelinePos;
+    int y = mouseY - ofGetHeight() - TIMELINE_HEIGHT;
+
+    Clip *current = first;
+    while(current != NULL) {
+        current->update(x, y);
+        current = current->right;
+    }
 }
 
 void ofApp::draw() {
@@ -45,14 +54,15 @@ void ofApp::draw() {
 
     /* TIMELINE */
     /* TODO: calculate width based on last frame of last clip */
-    timeline.allocate(1920, TIMELINE_HEIGHT);
+    timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
     timeline.begin();
-        Clip *current = first;
 
+        Clip *current = first;
         while(current != NULL) {
             current->draw();
             current = current->right;
         }
+
     timeline.end();
     timeline.draw(-timelinePos, height);
 }
@@ -70,9 +80,23 @@ void ofApp::mouseDragged(int x, int y, int button) {
 }
 
 void ofApp::mousePressed(int x, int y, int button) {
+    /* Make sure we click on the correct part of the timeline */
+    x += timelinePos;
+    y -= ofGetHeight() - TIMELINE_HEIGHT;
+
+    Clip *current = first;
+    while(current != NULL) {
+        current->inside(x, y);
+        current = current->right;
+    }
 }
 
 void ofApp::mouseReleased(int x, int y, int button) {
+    Clip *current = first;
+    while(current != NULL) {
+        current->deSelect();
+        current = current->right;
+    }
 }
 
 void ofApp::windowResized(int w, int h) {
