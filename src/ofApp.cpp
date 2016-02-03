@@ -15,11 +15,14 @@ void ofApp::setup() {
 }
 
 void ofApp::update() {
-    if (mouseX < TIMELINE_SCOLLING_AREA) {
-        timelinePos -= 1;
-    }
-    else if (mouseX > ofGetWidth() - TIMELINE_SCOLLING_AREA) {
-        timelinePos += 1;
+    /* Scroll timeline when within timeline area. */
+    if (mouseY > ofGetHeight() - TIMELINE_HEIGHT) {
+        if (mouseX < TIMELINE_SCOLLING_AREA) {
+            timelinePos -= 1;
+        }
+        else if (mouseX > ofGetWidth() - TIMELINE_SCOLLING_AREA) {
+            timelinePos += 1;
+        }
     }
 }
 
