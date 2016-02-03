@@ -1,6 +1,8 @@
 #pragma once
 
+#include "ofMain.h"
 #include "constants.h"
+
 
 class Clip {
     public:
@@ -14,8 +16,16 @@ class Clip {
         Clip *left  = NULL;
         Clip *right = NULL;
 
+        ofRectangle rect;
+
+    Clip() {
+        rect.x = start;
+        rect.width = length;
+        rect.height = TIMELINE_HEIGHT;
+    }
+
     void draw() {
         ofSetColor(128);
-        ofDrawRectangle(start, 0, length, TIMELINE_HEIGHT);
+        ofDrawRectangle(rect);
     }
 };
