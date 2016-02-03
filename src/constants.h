@@ -4,4 +4,5 @@
 #define CONSTANT_VALUES 1
 const int TIMELINE_HEIGHT = 50;
 const int TIMELINE_SCOLLING_AREA = 50;
+const int TIMELINE_FONT_SIZE = 15;
 #endif

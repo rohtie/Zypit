@@ -3,7 +3,7 @@
 #include "clip.h"
 
 void ofApp::setup() {
-    palanquinRegular.loadFont("Palanquin-Regular.ttf", 15);
+    palanquinRegular.loadFont("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
 
     // Normalize texture coordinates so that they are within 0 to 1 range
     ofDisableArbTex();
@@ -36,14 +36,11 @@ void ofApp::draw() {
     ofRect(0, 0, width, height);
     shader.end();
 
-    ofSetColor(0);
-    palanquinRegular.drawString("Hello!", width / 2, height / 2);
-
     /* TIMELINE */
     /* TODO: calculate width based on last frame of last clip */
     timeline.allocate(1920, TIMELINE_HEIGHT);
     timeline.begin();
-        Clip test;
+        Clip test(palanquinRegular);
         test.draw();
     timeline.end();
     timeline.draw(-timelinePos, height);
