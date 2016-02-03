@@ -28,10 +28,10 @@ void ofApp::update() {
     /* Scroll timeline when within timeline area. */
     if (mouseY > ofGetHeight() - TIMELINE_HEIGHT) {
         if (mouseX < TIMELINE_SCOLLING_AREA) {
-            timelinePos -= 1;
+            timelinePos -= TIMELINE_SCOLLING_SPEED;
         }
         else if (mouseX > ofGetWidth() - TIMELINE_SCOLLING_AREA) {
-            timelinePos += 1;
+            timelinePos += TIMELINE_SCOLLING_SPEED;
         }
     }
 
@@ -39,8 +39,25 @@ void ofApp::update() {
     int y = mouseY - ofGetHeight() - TIMELINE_HEIGHT;
 
     Clip *current = first;
-    while(current != NULL) {
-        current->update(x, y);
+    while (current != NULL) {
+        int res = current->update(x, y);
+
+        if (res == 1) {
+            if (current->left == NULL) {
+                first = current;
+            }
+            else if (current->left->left == NULL) {
+                first = current->left;
+            }
+
+            if (current->right == NULL) {
+                last = current;
+            }
+            else if (current->right->right == NULL) {
+                last = current->right;
+            }
+        }
+
         current = current->right;
     }
 }
@@ -61,7 +78,7 @@ void ofApp::draw() {
     timeline.begin();
 
         Clip *current = first;
-        while(current != NULL) {
+        while (current != NULL) {
             current->draw();
             current = current->right;
         }
@@ -88,7 +105,7 @@ void ofApp::mousePressed(int x, int y, int button) {
     y -= ofGetHeight() - TIMELINE_HEIGHT;
 
     Clip *current = first;
-    while(current != NULL) {
+    while (current != NULL) {
         current->inside(x, y);
         current = current->right;
     }
@@ -96,7 +113,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 void ofApp::mouseReleased(int x, int y, int button) {
     Clip *current = first;
-    while(current != NULL) {
+    while (current != NULL) {
         current->deSelect();
         current = current->right;
     }
