@@ -22,6 +22,12 @@ class Clip {
         bool isSelected = false;
         int selectedPos = 0;
 
+        bool isExpanding = false;
+        bool isLeftExpand = false;
+        int orgStart = 0;
+        int orgLength = 0;
+
+
     Clip(int _start, int _length, string _src, ofTrueTypeFont &_font) {
         start = _start;
         length = _length;
@@ -40,13 +46,28 @@ class Clip {
 
     void inside(int x, int y) {
         if (rect.inside(x, y)) {
-            isSelected = true;
-            selectedPos = x - rect.x;
+            if (x < start + TIMELINE_EXPAND_AREA) {
+                isExpanding = true;
+                isLeftExpand = true;
+            }
+            else if (x > start + length - TIMELINE_EXPAND_AREA) {
+                isExpanding = true;
+                isLeftExpand = false;
+            }
+            else {
+                isSelected = true;
+                selectedPos = x - rect.x;
+            }
+
+            orgStart = start;
+            orgLength = length;
         }
     }
 
     void deSelect() {
         isSelected = false;
+        isExpanding = false;
+        isLeftExpand = false;
     }
 
     void swap(Clip *a, Clip *b) {
@@ -128,13 +149,41 @@ class Clip {
 
             reconstruct();
         }
+        else if (isExpanding) {
+            if (isLeftExpand) {
+                start = x;
+                length = orgLength + orgStart - x;
+            }
+            else {
+                start = orgStart;
+                length = x - orgStart;
+            }
+
+            if (left != NULL && start < left->start + left->length) {
+                start = left->start + left->length;
+                length = (orgStart + orgLength) - (left->start + left->length);
+            }
+            else if (right != NULL && start + length > right->start) {
+                length = right->start - orgStart;
+                start = right->start - length;
+            }
+
+            reconstruct();
+        }
+
         return 0;
     }
 
     void draw() {
-        ofSetColor(128);
+        ofSetColor(TIMELINE_CLIP_COLOR);
         ofDrawRectangle(rect);
-        ofSetColor(255);
-        font.drawString(src, rect.x, rect.height / 2 + TIMELINE_FONT_SIZE / 2);
+
+        ofSetColor(TIMELINE_CLIP_COLOR + 28);
+        ofDrawLine(rect.x + 1, rect.y, rect.x + 1, rect.y + TIMELINE_HEIGHT);
+        ofSetColor(TIMELINE_CLIP_COLOR - 28);
+        ofDrawLine(rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + TIMELINE_HEIGHT);
+
+        ofSetColor(TIMELINE_FONT_COLOR);
+        font.drawString(src, rect.x + TIMELINE_FONT_SIZE / 2, rect.height / 2 + TIMELINE_FONT_SIZE / 2);
     }
 };

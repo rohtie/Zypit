@@ -13,6 +13,8 @@ void ofApp::setup() {
 
     shader.load("shadersGL3/shader");
 
+    ofBackground(BG_COLOR);
+
     /* Setup clips */
     first = new Clip(0, 100, "sun", palanquinRegular);
     Clip *middle = new Clip(120, 50, "horses", palanquinRegular);
@@ -38,10 +40,12 @@ void ofApp::update() {
     int x = mouseX + timelinePos;
     int y = mouseY - ofGetHeight() - TIMELINE_HEIGHT;
 
+    /* Update clips */
     Clip *current = first;
     while (current != NULL) {
         int res = current->update(x, y);
 
+        /* After swapping, the current clip might have become the first or last clip in the list */
         if (res == 1) {
             if (current->left == NULL) {
                 first = current;
@@ -76,6 +80,7 @@ void ofApp::draw() {
     /* TODO: calculate width based on last frame of last clip */
     timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
     timeline.begin();
+        ofBackground(TIMELINE_BG_COLOR);
 
         Clip *current = first;
         while (current != NULL) {
