@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
+#include "clip.h"
 
-class ofApp : public ofBaseApp{
+class ofApp : public ofBaseApp {
 	public:
 		ofTrueTypeFont palanquinRegular;
 
@@ -10,6 +11,9 @@ class ofApp : public ofBaseApp{
 
 		ofFbo timeline;
 		int timelinePos = 0;
+
+		Clip *first;
+		Clip *last;
 
 		void setup();
 		void update();

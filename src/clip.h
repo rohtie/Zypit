@@ -10,8 +10,8 @@ class Clip {
 
         float time = 0.0;
 
-        int start = 0;
-        int length = 100;
+        int start;
+        int length;
 
         Clip *left  = NULL;
         Clip *right = NULL;
@@ -20,7 +20,11 @@ class Clip {
 
         ofTrueTypeFont font;
 
-    Clip(ofTrueTypeFont &_font) {
+    Clip(int _start, int _length, string _src, ofTrueTypeFont &_font) {
+        start = _start;
+        length = _length;
+        src = _src;
+
         rect.x = start;
         rect.width = length;
         rect.height = TIMELINE_HEIGHT;

@@ -5,13 +5,20 @@
 void ofApp::setup() {
     palanquinRegular.loadFont("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
 
-    // Normalize texture coordinates so that they are within 0 to 1 range
+    /* Normalize texture coordinates so that they are within 0 to 1 range */
     ofDisableArbTex();
 
-    // Make sure textures can be repeated
+    /* Make sure textures can be repeated */
     ofSetTextureWrap(GL_REPEAT, GL_REPEAT);
 
     shader.load("shadersGL3/shader");
+
+    /* Setup clips */
+    first = new Clip(0, 100, "sun", palanquinRegular);
+    last = new Clip(150, 200, "narves1", palanquinRegular);
+
+    first->right = last;
+    last->left = first;
 }
 
 void ofApp::update() {
@@ -40,8 +47,12 @@ void ofApp::draw() {
     /* TODO: calculate width based on last frame of last clip */
     timeline.allocate(1920, TIMELINE_HEIGHT);
     timeline.begin();
-        Clip test(palanquinRegular);
-        test.draw();
+        Clip *current = first;
+
+        while(current != NULL) {
+            current->draw();
+            current = current->right;
+        }
     timeline.end();
     timeline.draw(-timelinePos, height);
 }
