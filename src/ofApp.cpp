@@ -26,6 +26,10 @@ void ofApp::setup() {
     last->left = middle;
 
     playing = first;
+
+    timelineMarkerRect.x = -TIMELINE_MARKER_SIZE / 2;
+    timelineMarkerRect.width = TIMELINE_MARKER_SIZE;
+    timelineMarkerRect.height = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 }
 
 void ofApp::update() {
@@ -67,20 +71,26 @@ void ofApp::update() {
         current = current->right;
     }
 
+    if (isMovingMarker) {
+        timelineMarker = x;
+    }
+
     /* Get current playing clip */
     if (isPlaying) {
         timelineMarker += 1;
         timelineMarker = timelineMarker % (last->start + last->length);
+    }
 
-        playing = defaultClip;
+    timelineMarkerRect.x = timelineMarker - TIMELINE_MARKER_SIZE / 2;
 
-        current = first;
-        while (current != NULL) {
-            if (timelineMarker >= current->start && timelineMarker <= current->start + current->length) {
-                playing = current;
-            }
-            current = current->right;
+    playing = defaultClip;
+
+    current = first;
+    while (current != NULL) {
+        if (timelineMarker >= current->start && timelineMarker <= current->start + current->length) {
+            playing = current;
         }
+        current = current->right;
     }
 }
 
@@ -109,7 +119,7 @@ void ofApp::draw() {
 
         ofSetColor(255, 0, 0);
         ofDrawLine(timelineMarker, 0, timelineMarker, TIMELINE_HEIGHT);
-        ofDrawRectangle(timelineMarker - TIMELINE_MARKER_SIZE / 2, 0, TIMELINE_MARKER_SIZE, TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT);
+        ofDrawRectangle(timelineMarkerRect);
 
     timeline.end();
     timeline.draw(-timelinePos, height);
@@ -135,6 +145,11 @@ void ofApp::mousePressed(int x, int y, int button) {
     x += timelinePos;
     y -= ofGetHeight() - TIMELINE_HEIGHT;
 
+    if (y < TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT) {
+        isMovingMarker = true;
+        return;
+    }
+
     Clip *current = first;
     while (current != NULL) {
         current->inside(x, y);
@@ -143,6 +158,14 @@ void ofApp::mousePressed(int x, int y, int button) {
 }
 
 void ofApp::mouseReleased(int x, int y, int button) {
+    /* Make sure we click on the correct part of the timeline */
+    x += timelinePos;
+    y -= ofGetHeight() - TIMELINE_HEIGHT;
+
+    if (isMovingMarker) {
+        isMovingMarker = false;
+    }
+
     Clip *current = first;
     while (current != NULL) {
         current->deSelect();
