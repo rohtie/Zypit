@@ -1,5 +1,3 @@
-#pragma include <header.glsl>
-
 float hash(float n) {
     return fract(sin(n) * 43758.5453);
 }
@@ -68,5 +66,3 @@ void mainImage( out vec4 o, in vec2 p ) {
 
     o.rgb = col;
 }
-
-#pragma include <footer.glsl>

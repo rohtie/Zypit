@@ -14,8 +14,11 @@ class ofApp : public ofBaseApp {
 
 		Clip *first;
 		Clip *last;
+		Clip *playing;
 
 		void setup();
+		void setupShader(ofShader shader, string filename);
+
 		void update();
 		void draw();
 

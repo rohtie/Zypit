@@ -11,12 +11,6 @@ void ofApp::setup() {
     /* Make sure textures can be repeated */
     ofSetTextureWrap(GL_REPEAT, GL_REPEAT);
 
-    /*shader.load("shadersGL3/shader");*/
-    shader.setupShaderFromFile(GL_VERTEX_SHADER, "vertex.glsl");
-    shader.setupShaderFromFile(GL_FRAGMENT_SHADER, "sun.glsl");
-    shader.bindDefaults();
-    shader.linkProgram();
-
     ofBackground(BG_COLOR);
 
     /* Setup clips */
@@ -28,6 +22,8 @@ void ofApp::setup() {
     middle->left = first;
     middle->right = last;
     last->left = middle;
+
+    playing = first;
 }
 
 void ofApp::update() {
@@ -76,11 +72,11 @@ void ofApp::draw() {
 
     /* MAIN SCREEN */
     ofSetColor(255);
-    shader.begin();
-    shader.setUniform1f("iGlobalTime", ofGetElapsedTimef());
-    shader.setUniform2f("iResolution", width, height);
-    ofRect(0, 0, width, height);
-    shader.end();
+    playing->shader.begin();
+        playing->shader.setUniform1f("iGlobalTime", ofGetElapsedTimef());
+        playing->shader.setUniform2f("iResolution", width, height);
+        ofRect(0, 0, width, height);
+    playing->shader.end();
 
     /* TIMELINE */
     timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);

@@ -1,5 +1,3 @@
-#pragma include <header.glsl>
-
 void mainImage( out vec4 col, in vec2 p) {
     p /= iResolution.xy;
     p = 2.0 * p - 1.0;
@@ -16,5 +14,3 @@ void mainImage( out vec4 col, in vec2 p) {
 
     col.rgb = vec3(result);
 }
-
-#pragma include <footer.glsl>

@@ -6,7 +6,8 @@
 
 class Clip {
     public:
-        string src = "shader.frag";
+        string src = "default.glsl";
+        ofShader shader;
 
         float time = 0.0;
 
@@ -37,6 +38,27 @@ class Clip {
         rect.height = TIMELINE_HEIGHT;
 
         reconstruct();
+        setupShader();
+    }
+
+    void setupShader() {
+        shader.setupShaderFromFile(GL_VERTEX_SHADER, "vertex.glsl");
+
+        ifstream shaderFile("data/" + src + ".glsl");
+        stringstream shaderSource;
+
+        if (shaderFile) {
+            shaderSource
+                << SHADER_HEADER
+                << shaderFile.rdbuf()
+                << SHADER_FOOTER;
+
+            shaderFile.close();
+        }
+
+        shader.setupShaderFromSource(GL_FRAGMENT_SHADER, shaderSource.str());
+        shader.bindDefaults();
+        shader.linkProgram();
     }
 
     void reconstruct() {
@@ -150,6 +172,7 @@ class Clip {
             reconstruct();
         }
         else if (isExpanding) {
+            /* TODO: Do not allow negative expand */
             if (isLeftExpand) {
                 start = x;
                 length = orgLength + orgStart - x;

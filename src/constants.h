@@ -13,4 +13,7 @@ const int TIMELINE_FONT_SIZE = 15;
 const int TIMELINE_BG_COLOR = 72;
 const int TIMELINE_CLIP_COLOR = 128;
 const int TIMELINE_FONT_COLOR = 200;
+
+const string SHADER_HEADER = "#pragma include <header.glsl>\n\n";
+const string SHADER_FOOTER = "\n#pragma include <footer.glsl>\n";
 #endif
