@@ -11,14 +11,18 @@ void ofApp::setup() {
     /* Make sure textures can be repeated */
     ofSetTextureWrap(GL_REPEAT, GL_REPEAT);
 
-    shader.load("shadersGL3/shader");
+    /*shader.load("shadersGL3/shader");*/
+    shader.setupShaderFromFile(GL_VERTEX_SHADER, "vertex.glsl");
+    shader.setupShaderFromFile(GL_FRAGMENT_SHADER, "sun.glsl");
+    shader.bindDefaults();
+    shader.linkProgram();
 
     ofBackground(BG_COLOR);
 
     /* Setup clips */
-    first = new Clip(0, 100, "sun", palanquinRegular);
-    Clip *middle = new Clip(120, 50, "horses", palanquinRegular);
-    last = new Clip(200, 300, "narves1", palanquinRegular);
+    first = new Clip(0, 200, "sun", palanquinRegular);
+    Clip *middle = new Clip(200, 100, "drugbots", palanquinRegular);
+    last = new Clip(300, 50, "pyramidtrip", palanquinRegular);
 
     first->right = middle;
     middle->left = first;
@@ -73,11 +77,12 @@ void ofApp::draw() {
     /* MAIN SCREEN */
     ofSetColor(255);
     shader.begin();
+    shader.setUniform1f("iGlobalTime", ofGetElapsedTimef());
+    shader.setUniform2f("iResolution", width, height);
     ofRect(0, 0, width, height);
     shader.end();
 
     /* TIMELINE */
-    /* TODO: calculate width based on last frame of last clip */
     timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
     timeline.begin();
         ofBackground(TIMELINE_BG_COLOR);
