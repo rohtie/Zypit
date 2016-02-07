@@ -6,7 +6,7 @@
 
 class Clip {
     public:
-        string src = "default.glsl";
+        string src;
         ofShader shader;
 
         float time = 0.0;
@@ -35,7 +35,8 @@ class Clip {
         src = _src;
         font = _font;
 
-        rect.height = TIMELINE_HEIGHT;
+        rect.height = TIMELINE_CLIP_HEIGHT;
+        rect.y = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 
         reconstruct();
         setupShader();
@@ -202,9 +203,9 @@ class Clip {
         ofDrawRectangle(rect);
 
         ofSetColor(TIMELINE_CLIP_COLOR + 28);
-        ofDrawLine(rect.x + 1, rect.y, rect.x + 1, rect.y + TIMELINE_HEIGHT);
+        ofDrawLine(rect.x + 1, rect.y, rect.x + 1, rect.y + TIMELINE_CLIP_HEIGHT);
         ofSetColor(TIMELINE_CLIP_COLOR - 28);
-        ofDrawLine(rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + TIMELINE_HEIGHT);
+        ofDrawLine(rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + TIMELINE_CLIP_HEIGHT);
 
         ofSetColor(TIMELINE_FONT_COLOR);
         font.drawString(src, rect.x + TIMELINE_FONT_SIZE / 2, rect.height / 2 + TIMELINE_FONT_SIZE / 2);

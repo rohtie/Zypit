@@ -14,9 +14,11 @@ void ofApp::setup() {
     ofBackground(BG_COLOR);
 
     /* Setup clips */
+    defaultClip = new Clip(0, 200, "default", palanquinRegular);
+
     first = new Clip(0, 200, "sun", palanquinRegular);
     Clip *middle = new Clip(200, 100, "drugbots", palanquinRegular);
-    last = new Clip(300, 50, "pyramidtrip", palanquinRegular);
+    last = new Clip(300, 25, "pyramidtrip", palanquinRegular);
 
     first->right = middle;
     middle->left = first;
@@ -64,6 +66,20 @@ void ofApp::update() {
 
         current = current->right;
     }
+
+    /* Get current playing clip */
+    timelineMarker += 1;
+    timelineMarker = timelineMarker % (last->start + last->length);
+
+    playing = defaultClip;
+
+    current = first;
+    while (current != NULL) {
+        if (timelineMarker >= current->start && timelineMarker <= current->start + current->length) {
+            playing = current;
+        }
+        current = current->right;
+    }
 }
 
 void ofApp::draw() {
@@ -88,6 +104,10 @@ void ofApp::draw() {
             current->draw();
             current = current->right;
         }
+
+        ofSetColor(255, 0, 0);
+        ofDrawLine(timelineMarker, 0, timelineMarker, TIMELINE_HEIGHT);
+        ofDrawRectangle(timelineMarker - TIMELINE_MARKER_SIZE / 2, 0, TIMELINE_MARKER_SIZE, TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT);
 
     timeline.end();
     timeline.draw(-timelinePos, height);
