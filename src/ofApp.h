@@ -18,6 +18,7 @@ class ofApp : public ofBaseApp {
 		Clip *defaultClip;
 
 		int timelineMarker = 0;
+		bool isPlaying = false;
 
 		void setup();
 		void setupShader(ofShader shader, string filename);

@@ -17,8 +17,8 @@ void ofApp::setup() {
     defaultClip = new Clip(0, 200, "default", palanquinRegular);
 
     first = new Clip(0, 200, "sun", palanquinRegular);
-    Clip *middle = new Clip(200, 100, "drugbots", palanquinRegular);
-    last = new Clip(300, 25, "pyramidtrip", palanquinRegular);
+    Clip *middle = new Clip(200, 10, "pyramidtrip", palanquinRegular);
+    last = new Clip(210, 100, "drugbots", palanquinRegular);
 
     first->right = middle;
     middle->left = first;
@@ -68,17 +68,19 @@ void ofApp::update() {
     }
 
     /* Get current playing clip */
-    timelineMarker += 1;
-    timelineMarker = timelineMarker % (last->start + last->length);
+    if (isPlaying) {
+        timelineMarker += 1;
+        timelineMarker = timelineMarker % (last->start + last->length);
 
-    playing = defaultClip;
+        playing = defaultClip;
 
-    current = first;
-    while (current != NULL) {
-        if (timelineMarker >= current->start && timelineMarker <= current->start + current->length) {
-            playing = current;
+        current = first;
+        while (current != NULL) {
+            if (timelineMarker >= current->start && timelineMarker <= current->start + current->length) {
+                playing = current;
+            }
+            current = current->right;
         }
-        current = current->right;
     }
 }
 
@@ -114,6 +116,9 @@ void ofApp::draw() {
 }
 
 void ofApp::keyPressed(int key) {
+    if (key == ' ') {
+        isPlaying = !isPlaying;
+    }
 }
 
 void ofApp::keyReleased(int key) {
