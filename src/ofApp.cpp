@@ -101,10 +101,14 @@ void ofApp::draw() {
     /* MAIN SCREEN */
     ofSetColor(255);
     playing->shader.begin();
-        playing->shader.setUniform1f("iGlobalTime", ofGetElapsedTimef());
+        playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f);
         playing->shader.setUniform2f("iResolution", width, height);
         ofRect(0, 0, width, height);
     playing->shader.end();
+
+    std::stringstream fps;
+    fps << round(ofGetFrameRate());
+    palanquinRegular.drawString(fps.str(), TIMELINE_FONT_SIZE, height - TIMELINE_FONT_SIZE);
 
     /* TIMELINE */
     timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
