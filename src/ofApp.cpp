@@ -173,7 +173,7 @@ void ofApp::render(int width, int height) {
 }
 
 void ofApp::exportFrame() {
-    if (isPlaying) {
+    if (isExportMode && isPlaying) {
         exportFbo.begin();
             render(exportFbo.getWidth(), exportFbo.getHeight());
         exportFbo.end();
@@ -202,20 +202,26 @@ void ofApp::keyPressed(int key) {
     if (key == ' ') {
         isPlaying = !isPlaying;
 
-        if (isPlaying) {
-            // Open up a pipe to ffmpeg so that we can send PNG images to it
-            // which will be sequenced into a video file
-            stringstream ffmpeg;
-            ffmpeg << "ffmpeg -y -f image2pipe -s " <<
-                   exportFbo.getWidth() << "x" << exportFbo.getHeight() <<
-                   "-i - -vcodec png -c:v libx264 -r 60 "
-                   "-crf 25 out.mp4";
+        if (isExportMode) {
+            if (isPlaying) {
+                // Open up a pipe to ffmpeg so that we can send PNG images to it
+                // which will be sequenced into a video file
+                stringstream ffmpeg;
+                ffmpeg <<
+                    "ffmpeg -y -f image2pipe -s " <<
+                    exportFbo.getWidth() << "x" << exportFbo.getHeight() <<
+                    " -i - -vcodec png -c:v libx264" <<
+                    " -r 60 -crf 25 out.mp4";
 
-            exportPipe = popen(ffmpeg.str().c_str(), "w");
+                exportPipe = popen(ffmpeg.str().c_str(), "w");
+            }
+            else {
+                pclose(exportPipe);
+            }
         }
-        else {
-            pclose(exportPipe);
-        }
+    }
+    else if (key == 'e') {
+        isExportMode = !isExportMode;
     }
 
     // Openframeworks does not support checking of CTRL directly, so we are
