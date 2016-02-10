@@ -48,6 +48,23 @@ void ofApp::setup() {
     timelineMarkerRect.height = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 }
 
+void ofApp::saveClips() {
+    pugi::xml_document doc;
+
+    Clip *current = first;
+    while (current != NULL) {
+        pugi::xml_node clip = doc.append_child("clip");
+        clip.append_attribute("src").set_value(current->src.c_str());
+        clip.append_attribute("start").set_value(current->start);
+        clip.append_attribute("length").set_value(current->length);
+
+        current = current->right;
+    }
+
+    doc.save_file("data/clips.xml");
+
+}
+
 void ofApp::update() {
     // Scroll timeline when within timeline area.
     if (mouseY > ofGetHeight() - TIMELINE_HEIGHT) {
@@ -148,6 +165,12 @@ void ofApp::draw() {
 void ofApp::keyPressed(int key) {
     if (key == ' ') {
         isPlaying = !isPlaying;
+    }
+
+    // Openframeworks does not support checking of CTRL directly, so we are
+    // using s instead of ctrl + s ATM to save.
+    else if (key == 's') {
+        saveClips();
     }
 }
 

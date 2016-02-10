@@ -1,3 +1,4 @@
-<clip src="sun" start="0" length="200"></clip>
-<clip src="pyramidtrip" start="200" length="10"></clip>
-<clip src="drugbots" start="210" length="100"></clip>
+<?xml version="1.0"?>
+<clip src="sun" start="0" length="200" />
+<clip src="pyramidtrip" start="200" length="10" />
+<clip src="drugbots" start="210" length="100" />

@@ -23,7 +23,7 @@ class ofApp : public ofBaseApp {
 		bool isMovingMarker = false;
 
 		void setup();
-		void setupShader(ofShader shader, string filename);
+		void saveClips();
 
 		void update();
 		void draw();
