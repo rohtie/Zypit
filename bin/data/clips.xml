@@ -1,4 +1,7 @@
 <?xml version="1.0"?>
-<clip src="sun" start="0" length="200" />
-<clip src="pyramidtrip" start="200" length="10" />
-<clip src="drugbots" start="210" length="100" />
+<clip src="hypnotichole" start="0" length="152" />
+<clip src="sun" start="152" length="200" />
+<clip src="pyramidtrip" start="352" length="10" />
+<clip src="relaxingwind" start="362" length="217" />
+<clip src="policelight" start="579" length="31" />
+<clip src="drugbots" start="610" length="244" />
