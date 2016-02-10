@@ -46,6 +46,9 @@ void ofApp::setup() {
     timelineMarkerRect.x = -TIMELINE_MARKER_SIZE / 2;
     timelineMarkerRect.width = TIMELINE_MARKER_SIZE;
     timelineMarkerRect.height = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
+
+    // Setup video export
+    exportFbo.allocate(1280, 720);
 }
 
 void ofApp::saveClips() {
@@ -132,12 +135,10 @@ void ofApp::draw() {
     int height = ofGetHeight() - TIMELINE_HEIGHT;
 
     // MAIN SCREEN
-    ofSetColor(255);
-    playing->shader.begin();
-        playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f);
-        playing->shader.setUniform2f("iResolution", width, height);
-        ofDrawRectangle(0, 0, width, height);
-    playing->shader.end();
+    render(width, height);
+
+    // Export
+    exportFrame();
 
     std::stringstream fps;
     fps << round(ofGetFrameRate());
@@ -162,13 +163,63 @@ void ofApp::draw() {
     timeline.draw(-timelinePos, height);
 }
 
+void ofApp::render(int width, int height) {
+    ofSetColor(255);
+    playing->shader.begin();
+        playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f);
+        playing->shader.setUniform2f("iResolution", width, height);
+        ofDrawRectangle(0, 0, width, height);
+    playing->shader.end();
+}
+
+void ofApp::exportFrame() {
+    if (isPlaying) {
+        exportFbo.begin();
+            render(exportFbo.getWidth(), exportFbo.getHeight());
+        exportFbo.end();
+
+        ofPixels pixels;
+        exportFbo.readToPixels(pixels);
+
+        ofImage image;
+        image.setFromPixels(pixels);
+
+        // OpenGL is designed around bottom up framebuffers and textures
+        // Therefore we need to flip the pixels from the fbo vertically
+        // to avoid that the saved image is upside down.
+        image.mirror(true, false);
+
+        ofBuffer buffer;
+        ofSaveImage(image.getPixels(), buffer);
+
+        fwrite(buffer.getData(), buffer.size(), 1, exportPipe);
+
+        palanquinRegular.drawString("Rendering...", TIMELINE_FONT_SIZE * 3, ofGetHeight() - TIMELINE_HEIGHT - TIMELINE_FONT_SIZE);
+    }
+}
+
 void ofApp::keyPressed(int key) {
     if (key == ' ') {
         isPlaying = !isPlaying;
+
+        if (isPlaying) {
+            // Open up a pipe to ffmpeg so that we can send PNG images to it
+            // which will be sequenced into a video file
+            stringstream ffmpeg;
+            ffmpeg << "ffmpeg -y -f image2pipe -s " <<
+                   exportFbo.getWidth() << "x" << exportFbo.getHeight() <<
+                   "-i - -vcodec png -c:v libx264 -r 60 "
+                   "-crf 25 out.mp4";
+
+            exportPipe = popen(ffmpeg.str().c_str(), "w");
+        }
+        else {
+            pclose(exportPipe);
+        }
     }
 
     // Openframeworks does not support checking of CTRL directly, so we are
-    // using s instead of ctrl + s ATM to save.
+    // using s instead of ctrl + s to save.
     else if (key == 's') {
         saveClips();
     }
