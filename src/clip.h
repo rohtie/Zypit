@@ -115,7 +115,7 @@ class Clip {
                 a->right->left = b;
             }
         }
-        else if (a->right = b) {
+        else if (a->right == b) {
             if (b->right != NULL) {
                 b->right->left = a;
             }

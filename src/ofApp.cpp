@@ -3,13 +3,10 @@
 #include "clip.h"
 
 void ofApp::setup() {
-    palanquinRegular.loadFont("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
+    palanquinRegular.load("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
 
     /* Normalize texture coordinates so that they are within 0 to 1 range */
     ofDisableArbTex();
-
-    /* Make sure textures can be repeated */
-    ofSetTextureWrap(GL_REPEAT, GL_REPEAT);
 
     ofBackground(BG_COLOR);
 
@@ -103,7 +100,7 @@ void ofApp::draw() {
     playing->shader.begin();
         playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f);
         playing->shader.setUniform2f("iResolution", width, height);
-        ofRect(0, 0, width, height);
+        ofDrawRectangle(0, 0, width, height);
     playing->shader.end();
 
     std::stringstream fps;
