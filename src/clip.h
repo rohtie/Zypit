@@ -173,7 +173,7 @@ class Clip {
             reconstruct();
         }
         else if (isExpanding) {
-            /* TODO: Do not allow negative expand */
+            // TODO: Do not allow negative expand
             if (isLeftExpand) {
                 start = x;
                 length = orgLength + orgStart - x;

@@ -1,36 +1,55 @@
+#include "pugi/pugixml.hpp"
+
 #include "ofApp.h"
 #include "constants.h"
 #include "clip.h"
 
 void ofApp::setup() {
-    palanquinRegular.load("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
-
-    /* Normalize texture coordinates so that they are within 0 to 1 range */
-    ofDisableArbTex();
-
     ofBackground(BG_COLOR);
 
-    /* Setup clips */
+    palanquinRegular.load("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
+
+    // Normalize texture coordinates so that they are within 0 to 1 range
+    ofDisableArbTex();
+
+    // Setup clips from XML file
+    pugi::xml_document doc;
+    doc.load_file("data/clips.xml");
+
+    Clip *current = NULL;
+
+    for (pugi::xml_node clip = doc.first_child(); clip; clip = clip.next_sibling()) {
+        Clip *newClip = new Clip(clip.attribute("start").as_int(),
+                             clip.attribute("length").as_int(),
+                             clip.attribute("src").value(),
+                             palanquinRegular);
+
+        if (current == NULL) {
+            first = newClip;
+            current = first;
+        }
+        else {
+            current->right = newClip;
+            newClip->left = current;
+            current = newClip;
+        }
+
+        if (clip.next_sibling() == NULL) {
+            last = newClip;
+        }
+    }
+
     defaultClip = new Clip(0, 200, "default", palanquinRegular);
-
-    first = new Clip(0, 200, "sun", palanquinRegular);
-    Clip *middle = new Clip(200, 10, "pyramidtrip", palanquinRegular);
-    last = new Clip(210, 100, "drugbots", palanquinRegular);
-
-    first->right = middle;
-    middle->left = first;
-    middle->right = last;
-    last->left = middle;
-
     playing = first;
 
+    // Setup timeline
     timelineMarkerRect.x = -TIMELINE_MARKER_SIZE / 2;
     timelineMarkerRect.width = TIMELINE_MARKER_SIZE;
     timelineMarkerRect.height = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 }
 
 void ofApp::update() {
-    /* Scroll timeline when within timeline area. */
+    // Scroll timeline when within timeline area.
     if (mouseY > ofGetHeight() - TIMELINE_HEIGHT) {
         if (mouseX < TIMELINE_SCOLLING_AREA) {
             timelinePos -= TIMELINE_SCOLLING_SPEED;
@@ -43,12 +62,12 @@ void ofApp::update() {
     int x = mouseX + timelinePos;
     int y = mouseY - ofGetHeight() - TIMELINE_HEIGHT;
 
-    /* Update clips */
+    // Update clips
     Clip *current = first;
     while (current != NULL) {
         int res = current->update(x, y);
 
-        /* After swapping, the current clip might have become the first or last clip in the list */
+        // After swapping, the current clip might have become the first or last clip in the list
         if (res == 1) {
             if (current->left == NULL) {
                 first = current;
@@ -72,7 +91,7 @@ void ofApp::update() {
         timelineMarker = x;
     }
 
-    /* Get current playing clip */
+    // Get current playing clip
     if (isPlaying) {
         timelineMarker += 1;
         timelineMarker = timelineMarker % (last->start + last->length);
@@ -95,7 +114,7 @@ void ofApp::draw() {
     int width = ofGetWidth();
     int height = ofGetHeight() - TIMELINE_HEIGHT;
 
-    /* MAIN SCREEN */
+    // MAIN SCREEN
     ofSetColor(255);
     playing->shader.begin();
         playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f);
@@ -107,7 +126,7 @@ void ofApp::draw() {
     fps << round(ofGetFrameRate());
     palanquinRegular.drawString(fps.str(), TIMELINE_FONT_SIZE, height - TIMELINE_FONT_SIZE);
 
-    /* TIMELINE */
+    // TIMELINE
     timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
     timeline.begin();
         ofBackground(TIMELINE_BG_COLOR);
@@ -142,7 +161,7 @@ void ofApp::mouseDragged(int x, int y, int button) {
 }
 
 void ofApp::mousePressed(int x, int y, int button) {
-    /* Make sure we click on the correct part of the timeline */
+    // Make sure we click on the correct part of the timeline
     x += timelinePos;
     y -= ofGetHeight() - TIMELINE_HEIGHT;
 
@@ -159,7 +178,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 }
 
 void ofApp::mouseReleased(int x, int y, int button) {
-    /* Make sure we click on the correct part of the timeline */
+    // Make sure we click on the correct part of the timeline
     x += timelinePos;
     y -= ofGetHeight() - TIMELINE_HEIGHT;
 
