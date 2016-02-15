@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+
 #include "clip.h"
 
 class ofApp : public ofBaseApp {
@@ -16,6 +17,9 @@ class ofApp : public ofBaseApp {
         Clip *last;
         Clip *playing;
         Clip *defaultClip;
+
+        ofSoundPlayer player;
+        ofTexture fftTexture;
 
         ofRectangle timelineMarkerRect;
         int  timelineMarker = 0;

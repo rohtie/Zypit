@@ -12,6 +12,10 @@ void ofApp::setup() {
     // Normalize texture coordinates so that they are within 0 to 1 range
     ofDisableArbTex();
 
+    // Allocate texture for the spectrum analysis of the sound playing
+    // through the ofSoundPlayer
+    fftTexture.allocate(512, 1, GL_RGBA, false);
+
     // Setup clips from XML file
     pugi::xml_document doc;
     doc.load_file("data/clips.xml");
@@ -69,6 +73,9 @@ void ofApp::saveClips() {
 }
 
 void ofApp::update() {
+    // Load spectrum analysis into texture
+    fftTexture.loadData(ofSoundGetSpectrum(512), 512, 1, GL_LUMINANCE);
+
     // Scroll timeline when within timeline area.
     if (mouseY > ofGetHeight() - TIMELINE_HEIGHT) {
         if (mouseX < TIMELINE_SCOLLING_AREA) {
@@ -165,11 +172,15 @@ void ofApp::draw() {
 
 void ofApp::render(int width, int height) {
     ofSetColor(255);
+
+    fftTexture.bind();
     playing->shader.begin();
         playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f);
         playing->shader.setUniform2f("iResolution", width, height);
+        playing->shader.setUniformTexture("iChannel0", fftTexture, 0);
         ofDrawRectangle(0, 0, width, height);
     playing->shader.end();
+    fftTexture.unbind();
 }
 
 void ofApp::exportFrame() {
