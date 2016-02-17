@@ -15,6 +15,7 @@ void ofApp::setup() {
     // Allocate texture for the spectrum analysis of the sound playing
     // through the ofSoundPlayer
     fftTexture.allocate(512, 1, GL_RGBA, false);
+    player.load("song.mp3");
 
     // Setup clips from XML file
     pugi::xml_document doc;
@@ -119,6 +120,8 @@ void ofApp::update() {
 
     if (isMovingMarker) {
         timelineMarker = x;
+        player.setPositionMS((int) ((timelineMarker / FPS) * 1000));
+        cout << (int) ((timelineMarker / FPS) * 1000) << "\n";
     }
 
     // Get current playing clip
@@ -215,6 +218,13 @@ void ofApp::exportFrame() {
 void ofApp::keyPressed(int key) {
     if (key == ' ') {
         isPlaying = !isPlaying;
+
+        if (isPlaying) {
+            player.play();
+        }
+        else {
+            player.stop();
+        }
 
         if (isExportMode) {
             if (isPlaying) {
