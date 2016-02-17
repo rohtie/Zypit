@@ -2,9 +2,9 @@
 <clip src="twerking" start="0" length="161" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="hypnotichole" start="161" length="152" time="2.75" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="sun" start="313" length="212" time="5.48333359" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="pyramidtrip" start="525" length="29" time="-12.75" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="relaxingwind" start="554" length="217" time="6.55000019" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="policelight" start="771" length="45" time="10.166667" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="drugbots" start="816" length="218" time="8.26666641" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="twerking" start="1034" length="233" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="chantarellus" start="1267" length="151" time="0" iChannel0="tex05.jpg" iChannel1="tex16.png" iChannel2="" iChannel3="" />
+<clip src="chantarellus" start="525" length="151" time="0" iChannel0="tex05.jpg" iChannel1="tex16.png" iChannel2="" iChannel3="" />
+<clip src="pyramidtrip" start="676" length="29" time="-12.75" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
+<clip src="relaxingwind" start="705" length="217" time="6.55000019" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
+<clip src="policelight" start="922" length="45" time="10.166667" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
+<clip src="drugbots" start="967" length="218" time="8.26666641" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
+<clip src="twerking" start="1185" length="233" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />

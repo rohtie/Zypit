@@ -34,6 +34,8 @@ class ofApp : public ofBaseApp {
         FILE *exportPipe;
         bool isExportMode = false;
 
+        ofFbo main;
+
         void setup();
         void saveClips();
 

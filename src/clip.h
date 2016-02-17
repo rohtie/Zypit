@@ -48,14 +48,12 @@ class Clip {
                 else {
                     ofLoadImage(iChannel[i], iChannelNames[i]);
                     iChannel[i].setTextureWrap(GL_REPEAT, GL_REPEAT);
+                    iChannel[i].setTextureMinMagFilter(GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_LINEAR);
                 }
             }
         }
 
-        time = _start / FPS;
-        if (time != _time) {
-            time = _time;
-        }
+        time = _time;
 
         font = _font;
 

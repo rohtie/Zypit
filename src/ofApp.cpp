@@ -161,7 +161,11 @@ void ofApp::draw() {
     int height = ofGetHeight() - TIMELINE_HEIGHT;
 
     // MAIN SCREEN
+    main.allocate(width, height);
+    main.begin();
     render(width, height);
+    main.end();
+    main.draw(0, 0);
 
     // Export
     exportFrame();
@@ -252,11 +256,6 @@ void ofApp::exportFrame() {
 
         ofImage image;
         image.setFromPixels(pixels);
-
-        // OpenGL is designed around bottom up framebuffers and textures
-        // Therefore we need to flip the pixels from the fbo vertically
-        // to avoid that the saved image is upside down.
-        image.mirror(true, false);
 
         ofBuffer buffer;
         ofSaveImage(image.getPixels(), buffer);
