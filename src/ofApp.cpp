@@ -239,11 +239,11 @@ void ofApp::keyPressed(int key) {
     }
     else if (key == 't') {
         // Assume that the current playing clip is the one we want to change.
-        // TODO: Make sure we resample orginal time when switching to another
-        // clip while changing the current playing clip.
         isChangingClipTime = !isChangingClipTime;
+
         changingClipTimeBase = mouseX;
         orgTime = playing->time;
+        changingClip = playing;
     }
 
     // Openframeworks does not support checking of CTRL directly, so we are
@@ -258,6 +258,13 @@ void ofApp::keyReleased(int key) {
 
 void ofApp::mouseMoved(int x, int y) {
     if (isChangingClipTime) {
+        // If the clip has been changed, we disable time changing to prevent
+        // unintuitive time changes on other clips.
+        if (changingClip != playing) {
+            isChangingClipTime = false;
+            return;
+        }
+
         playing->time = orgTime + (changingClipTimeBase - x) / FPS;
     }
 }

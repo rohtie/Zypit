@@ -27,6 +27,7 @@ class ofApp : public ofBaseApp {
         bool isMovingMarker = false;
         bool isChangingClipTime = false;
         int changingClipTimeBase = 0;
+        Clip* changingClip = NULL;
         float orgTime = 0.0;
 
         ofFbo exportFbo;
