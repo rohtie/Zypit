@@ -23,10 +23,13 @@ void ofApp::setup() {
     Clip *current = NULL;
 
     for (pugi::xml_node clip = doc.first_child(); clip; clip = clip.next_sibling()) {
-        Clip *newClip = new Clip(clip.attribute("start").as_int(),
-                             clip.attribute("length").as_int(),
-                             clip.attribute("src").value(),
-                             palanquinRegular);
+        Clip *newClip = new Clip(
+            clip.attribute("src").value(),
+            clip.attribute("start").as_int(),
+            clip.attribute("length").as_int(),
+            clip.attribute("time").as_float(),
+            palanquinRegular
+        );
 
         if (current == NULL) {
             first = newClip;
@@ -43,7 +46,7 @@ void ofApp::setup() {
         }
     }
 
-    defaultClip = new Clip(0, 200, "default", palanquinRegular);
+    defaultClip = new Clip("default", 0, 200, 0.0, palanquinRegular);
     playing = first;
 
     // Setup timeline
@@ -64,12 +67,12 @@ void ofApp::saveClips() {
         clip.append_attribute("src").set_value(current->src.c_str());
         clip.append_attribute("start").set_value(current->start);
         clip.append_attribute("length").set_value(current->length);
+        clip.append_attribute("time").set_value(current->time);
 
         current = current->right;
     }
 
     doc.save_file("data/clips.xml");
-
 }
 
 void ofApp::update() {
@@ -175,7 +178,7 @@ void ofApp::render(int width, int height) {
 
     fftTexture.bind();
     playing->shader.begin();
-        playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f);
+        playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f - playing->time);
         playing->shader.setUniform2f("iResolution", width, height);
         playing->shader.setUniformTexture("iChannel0", fftTexture, 0);
         ofDrawRectangle(0, 0, width, height);

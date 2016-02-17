@@ -29,10 +29,16 @@ class Clip {
         int orgLength = 0;
 
 
-    Clip(int _start, int _length, string _src, ofTrueTypeFont &_font) {
+    Clip(string _src, int _start, int _length, float _time, ofTrueTypeFont &_font) {
+        src = _src;
         start = _start;
         length = _length;
-        src = _src;
+
+        time = _start / 60.0;
+        if (time != _time) {
+            time = _time;
+        }
+
         font = _font;
 
         rect.height = TIMELINE_CLIP_HEIGHT;

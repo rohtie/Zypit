@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<clip src="hypnotichole" start="0" length="152" />
-<clip src="sun" start="152" length="200" />
-<clip src="pyramidtrip" start="352" length="10" />
-<clip src="relaxingwind" start="362" length="217" />
-<clip src="policelight" start="579" length="31" />
-<clip src="drugbots" start="610" length="244" />
+<clip src="hypnotichole" start="0" length="152" time="0" />
+<clip src="sun" start="152" length="212" time="2.5333333" />
+<clip src="pyramidtrip" start="364" length="29" time="6.0666666" />
+<clip src="relaxingwind" start="393" length="217" time="6.55000019" />
+<clip src="policelight" start="610" length="31" time="10.166667" />
+<clip src="drugbots" start="641" length="244" time="10.6833334" />
