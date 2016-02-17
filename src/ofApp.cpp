@@ -153,10 +153,6 @@ void ofApp::draw() {
     // Export
     exportFrame();
 
-    std::stringstream fps;
-    fps << round(ofGetFrameRate());
-    palanquinRegular.drawString(fps.str(), TIMELINE_FONT_SIZE, height - TIMELINE_FONT_SIZE);
-
     // TIMELINE
     timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
     timeline.begin();
@@ -174,6 +170,41 @@ void ofApp::draw() {
 
     timeline.end();
     timeline.draw(-timelinePos, height);
+
+    // Transparent black box so that white text can be visible at all times
+    ofSetColor(0, 0, 0, INFORBAR_ALPHA);
+    ofDrawRectangle(
+        0, ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT,
+        ofGetWidth(), INFOBAR_HEIGHT
+    );
+
+    ofSetColor(INFORBAR_DATA_COLOR);
+
+    // Draw FPS
+    std::stringstream fps;
+    fps << round(ofGetFrameRate());
+    palanquinRegular.drawString(
+        fps.str(),
+        TIMELINE_FONT_SIZE,
+        height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+    );
+
+    if (isExportMode && isPlaying) {
+        palanquinRegular.drawString(
+            "Rendering...",
+            TIMELINE_FONT_SIZE * 3,
+            ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+        );
+    }
+
+    // Visualize spectrum
+    float* buffer = ofSoundGetSpectrum(512);
+    for (int i = 0; i < 512; i++) {
+        ofDrawRectangle(
+            ofGetWidth() - 512 + i,
+            ofGetHeight() - TIMELINE_HEIGHT - 1 - buffer[i] * INFOBAR_HEIGHT,
+            1, buffer[i] * INFOBAR_HEIGHT);
+    }
 }
 
 void ofApp::render(int width, int height) {
@@ -210,8 +241,6 @@ void ofApp::exportFrame() {
         ofSaveImage(image.getPixels(), buffer);
 
         fwrite(buffer.getData(), buffer.size(), 1, exportPipe);
-
-        palanquinRegular.drawString("Rendering...", TIMELINE_FONT_SIZE * 3, ofGetHeight() - TIMELINE_HEIGHT - TIMELINE_FONT_SIZE);
     }
 }
 
