@@ -34,7 +34,7 @@ class Clip {
         start = _start;
         length = _length;
 
-        time = _start / 60.0;
+        time = _start / FPS;
         if (time != _time) {
             time = _time;
         }

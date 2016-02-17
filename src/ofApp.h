@@ -25,6 +25,9 @@ class ofApp : public ofBaseApp {
         int  timelineMarker = 0;
         bool isPlaying      = false;
         bool isMovingMarker = false;
+        bool isChangingClipTime = false;
+        int changingClipTimeBase = 0;
+        float orgTime = 0.0;
 
         ofFbo exportFbo;
         FILE *exportPipe;

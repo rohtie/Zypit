@@ -178,7 +178,7 @@ void ofApp::render(int width, int height) {
 
     fftTexture.bind();
     playing->shader.begin();
-        playing->shader.setUniform1f("iGlobalTime", timelineMarker / 60.0f - playing->time);
+        playing->shader.setUniform1f("iGlobalTime", timelineMarker / FPS - playing->time);
         playing->shader.setUniform2f("iResolution", width, height);
         playing->shader.setUniformTexture("iChannel0", fftTexture, 0);
         ofDrawRectangle(0, 0, width, height);
@@ -237,6 +237,14 @@ void ofApp::keyPressed(int key) {
     else if (key == 'e') {
         isExportMode = !isExportMode;
     }
+    else if (key == 't') {
+        // Assume that the current playing clip is the one we want to change.
+        // TODO: Make sure we resample orginal time when switching to another
+        // clip while changing the current playing clip.
+        isChangingClipTime = !isChangingClipTime;
+        changingClipTimeBase = mouseX;
+        orgTime = playing->time;
+    }
 
     // Openframeworks does not support checking of CTRL directly, so we are
     // using s instead of ctrl + s to save.
@@ -249,6 +257,9 @@ void ofApp::keyReleased(int key) {
 }
 
 void ofApp::mouseMoved(int x, int y) {
+    if (isChangingClipTime) {
+        playing->time = orgTime + (changingClipTimeBase - x) / FPS;
+    }
 }
 
 void ofApp::mouseDragged(int x, int y, int button) {
