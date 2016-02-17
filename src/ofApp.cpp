@@ -24,11 +24,19 @@ void ofApp::setup() {
     Clip *current = NULL;
 
     for (pugi::xml_node clip = doc.first_child(); clip; clip = clip.next_sibling()) {
+        string iChannel[] = {
+            clip.attribute("iChannel0").value(),
+            clip.attribute("iChannel1").value(),
+            clip.attribute("iChannel2").value(),
+            clip.attribute("iChannel3").value()
+        };
+
         Clip *newClip = new Clip(
             clip.attribute("src").value(),
             clip.attribute("start").as_int(),
             clip.attribute("length").as_int(),
             clip.attribute("time").as_float(),
+            iChannel,
             palanquinRegular
         );
 
@@ -47,7 +55,8 @@ void ofApp::setup() {
         }
     }
 
-    defaultClip = new Clip("default", 0, 200, 0.0, palanquinRegular);
+    string iChannel[4];
+    defaultClip = new Clip("default", 0, 200, 0.0, iChannel, palanquinRegular);
     playing = first;
 
     // Setup timeline
@@ -69,6 +78,11 @@ void ofApp::saveClips() {
         clip.append_attribute("start").set_value(current->start);
         clip.append_attribute("length").set_value(current->length);
         clip.append_attribute("time").set_value(current->time);
+
+        for (int i=0; i<4; i++) {
+            clip.append_attribute(("iChannel" + ofToString(i)).c_str())
+                .set_value(current->iChannelNames[i].c_str());
+        }
 
         current = current->right;
     }
@@ -121,7 +135,6 @@ void ofApp::update() {
     if (isMovingMarker) {
         timelineMarker = x;
         player.setPositionMS((int) ((timelineMarker / FPS) * 1000));
-        cout << (int) ((timelineMarker / FPS) * 1000) << "\n";
     }
 
     // Get current playing clip
@@ -210,14 +223,22 @@ void ofApp::draw() {
 void ofApp::render(int width, int height) {
     ofSetColor(255);
 
-    fftTexture.bind();
     playing->shader.begin();
         playing->shader.setUniform1f("iGlobalTime", timelineMarker / FPS - playing->time);
         playing->shader.setUniform2f("iResolution", width, height);
-        playing->shader.setUniformTexture("iChannel0", fftTexture, 0);
+
+        for (int i=0; i<4; i++) {
+            if (playing->iChannel[i].isAllocated()) {
+                playing->shader.setUniformTexture("iChannel" + ofToString(i), playing->iChannel[i], i);
+            }
+
+            if (playing->soundChannel > -1) {
+                playing->shader.setUniformTexture("iChannel" + ofToString(playing->soundChannel), fftTexture, i);
+            }
+        }
+
         ofDrawRectangle(0, 0, width, height);
     playing->shader.end();
-    fftTexture.unbind();
 }
 
 void ofApp::exportFrame() {

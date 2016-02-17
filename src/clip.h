@@ -28,11 +28,29 @@ class Clip {
         int orgStart = 0;
         int orgLength = 0;
 
+        ofTexture iChannel[4];
+        string iChannelNames[4];
+        int soundChannel = -1;
 
-    Clip(string _src, int _start, int _length, float _time, ofTrueTypeFont &_font) {
+    Clip(string _src, int _start, int _length, float _time, string* _iChannel, ofTrueTypeFont &_font) {
         src = _src;
         start = _start;
         length = _length;
+
+        // Setup texture channels
+        for (int i=0; i<4; i++) {
+            iChannelNames[i] = _iChannel[i];
+
+            if (!iChannelNames[i].empty()) {
+                if (iChannelNames[i] == "sound") {
+                    soundChannel = i;
+                }
+                else {
+                    ofLoadImage(iChannel[i], iChannelNames[i]);
+                    iChannel[i].setTextureWrap(GL_REPEAT, GL_REPEAT);
+                }
+            }
+        }
 
         time = _start / FPS;
         if (time != _time) {
