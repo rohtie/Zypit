@@ -14,7 +14,7 @@ void ofApp::setup() {
 
     // Allocate texture for the spectrum analysis of the sound playing
     // through the ofSoundPlayer
-    fftTexture.allocate(512, 1, GL_RGBA, false);
+    fftTexture.allocate(SPECTRUM_WIDTH, 1, GL_RGBA, false);
     player.load("song.mp3");
 
     // Setup clips from XML file
@@ -66,6 +66,11 @@ void ofApp::setup() {
 
     // Setup video export
     exportFbo.allocate(1280, 720);
+
+    fftSmoothed = new float[8192];
+    for (int i = 0; i < 8192; i++){
+        fftSmoothed[i] = 0;
+    }
 }
 
 void ofApp::saveClips() {
@@ -91,8 +96,20 @@ void ofApp::saveClips() {
 }
 
 void ofApp::update() {
+    ofSoundUpdate();
+
     // Load spectrum analysis into texture
-    fftTexture.loadData(ofSoundGetSpectrum(512), 512, 1, GL_LUMINANCE);
+    float * val = ofSoundGetSpectrum(512);
+    for (int i = 0; i < SPECTRUM_WIDTH; i++){
+        // Let signal dimminish over time to make the visual more pronounced
+        fftSmoothed[i] *= 0.97;
+
+        // Refresh signal if it is more powerful than the current signal
+        float fft = ofClamp(val[i] * 50.0, 0.0, 1.0);
+        if (fftSmoothed[i] < fft) fftSmoothed[i] = fft;
+    }
+
+    fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 1, GL_LUMINANCE);
 
     // Scroll timeline when within timeline area.
     if (mouseY > ofGetHeight() - TIMELINE_HEIGHT) {
@@ -215,12 +232,13 @@ void ofApp::draw() {
     }
 
     // Visualize spectrum
-    float* buffer = ofSoundGetSpectrum(512);
-    for (int i = 0; i < 512; i++) {
+    for (int i = 0; i < SPECTRUM_WIDTH; i++) {
+        float magnitude = fftSmoothed[i] * INFOBAR_HEIGHT;
+
         ofDrawRectangle(
-            ofGetWidth() - 512 + i,
-            ofGetHeight() - TIMELINE_HEIGHT - 1 - buffer[i] * INFOBAR_HEIGHT,
-            1, buffer[i] * INFOBAR_HEIGHT);
+            ofGetWidth() - SPECTRUM_WIDTH + i,
+            ofGetHeight() - TIMELINE_HEIGHT - 1 - magnitude,
+            1, magnitude);
     }
 }
 

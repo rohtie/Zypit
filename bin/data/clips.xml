@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<clip src="twerking" start="0" length="161" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
+<clip src="meltingpot" start="0" length="161" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="hypnotichole" start="161" length="152" time="2.75" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="sun" start="313" length="212" time="5.48333359" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="chantarellus" start="525" length="151" time="0" iChannel0="tex05.jpg" iChannel1="tex16.png" iChannel2="" iChannel3="" />
+<clip src="zebrabloc" start="525" length="151" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="pyramidtrip" start="676" length="29" time="-12.75" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="relaxingwind" start="705" length="217" time="6.55000019" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="policelight" start="922" length="45" time="10.166667" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />

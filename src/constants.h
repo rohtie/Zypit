@@ -22,6 +22,10 @@ const int INFOBAR_HEIGHT = 32;
 const int INFORBAR_ALPHA = 200;
 const int INFORBAR_DATA_COLOR = 255;
 
+// To prevent dead frequencies from showing on the spectrum, the width is cropped
+// to 400, which will contain all the live frequencies.
+const int SPECTRUM_WIDTH = 400;
+
 const string SHADER_HEADER = "#pragma include <header.glsl>\n\n";
 const string SHADER_FOOTER = "\n#pragma include <footer.glsl>\n";
 #endif

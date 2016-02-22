@@ -20,6 +20,7 @@ class ofApp : public ofBaseApp {
 
         ofSoundPlayer player;
         ofTexture fftTexture;
+        float* fftSmoothed;
 
         ofRectangle timelineMarkerRect;
         int  timelineMarker = 0;
