@@ -8,3 +8,6 @@
 <clip src="policelight" start="922" length="45" time="10.166667" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="drugbots" start="967" length="218" time="8.26666641" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
 <clip src="twerking" start="1185" length="233" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
+<clip src="dancingsquares" start="1418" length="233" time="0" iChannel0="sound" iChannel1="tex15.png" iChannel2="" iChannel3="" />
+<clip src="cantharellus" start="1651" length="233" time="0" iChannel0="tex05.jpg" iChannel1="tex16.png" iChannel2="" iChannel3="" />
+<clip src="spinalinjury" start="1884" length="233" time="-2.0666666" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />

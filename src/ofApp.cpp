@@ -96,8 +96,6 @@ void ofApp::saveClips() {
 }
 
 void ofApp::update() {
-    ofSoundUpdate();
-
     // Load spectrum analysis into texture
     float * val = ofSoundGetSpectrum(512);
     for (int i = 0; i < SPECTRUM_WIDTH; i++){
@@ -253,8 +251,7 @@ void ofApp::render(int width, int height) {
             if (playing->iChannel[i].isAllocated()) {
                 playing->shader.setUniformTexture("iChannel" + ofToString(i), playing->iChannel[i], i);
             }
-
-            if (playing->soundChannel > -1) {
+            else if (playing->soundChannel == i) {
                 playing->shader.setUniformTexture("iChannel" + ofToString(playing->soundChannel), fftTexture, i);
             }
         }
