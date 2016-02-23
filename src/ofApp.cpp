@@ -24,19 +24,23 @@ void ofApp::setup() {
     Clip *current = NULL;
 
     for (pugi::xml_node clip = doc.first_child(); clip; clip = clip.next_sibling()) {
-        string iChannel[] = {
-            clip.attribute("iChannel0").value(),
-            clip.attribute("iChannel1").value(),
-            clip.attribute("iChannel2").value(),
-            clip.attribute("iChannel3").value()
-        };
+        string iChannelSrc[4];
+        string iChannelFilter[4];
+
+        pugi::xml_node iChannel = clip.first_child();
+        for (int i=0; i<4; i++) {
+            iChannelSrc[i] = iChannel.attribute("src").value();
+            iChannelFilter[i] = iChannel.attribute("filter").value();
+
+            iChannel = iChannel.next_sibling();
+        }
 
         Clip *newClip = new Clip(
             clip.attribute("src").value(),
             clip.attribute("start").as_int(),
             clip.attribute("length").as_int(),
             clip.attribute("time").as_float(),
-            iChannel,
+            iChannelSrc, iChannelFilter,
             palanquinRegular
         );
 
@@ -56,7 +60,7 @@ void ofApp::setup() {
     }
 
     string iChannel[4];
-    defaultClip = new Clip("default", 0, 200, 0.0, iChannel, palanquinRegular);
+    defaultClip = new Clip("default", 0, 200, 0.0, iChannel, iChannel, palanquinRegular);
     playing = first;
 
     // Setup timeline
@@ -85,8 +89,11 @@ void ofApp::saveClips() {
         clip.append_attribute("time").set_value(current->time);
 
         for (int i=0; i<4; i++) {
-            clip.append_attribute(("iChannel" + ofToString(i)).c_str())
-                .set_value(current->iChannelNames[i].c_str());
+            pugi::xml_node iChannel = clip.append_child("iChannel");
+            iChannel.append_attribute("src")
+                    .set_value(current->iChannelSrc[i].c_str());
+            iChannel.append_attribute("filter")
+                    .set_value(current->iChannelFilter[i].c_str());
         }
 
         current = current->right;

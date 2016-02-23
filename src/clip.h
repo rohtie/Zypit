@@ -29,30 +29,41 @@ class Clip {
         int orgLength = 0;
 
         ofTexture iChannel[4];
-        string iChannelNames[4];
+        string iChannelSrc[4];
+        string iChannelFilter[4];
+
         int soundChannel = -1;
 
-    Clip(string _src, int _start, int _length, float _time, string* _iChannel, ofTrueTypeFont &_font) {
+    Clip(string _src, int _start, int _length, float _time, string* _iChannelSrc, string* _iChannelFilter, ofTrueTypeFont &_font) {
         src = _src;
         start = _start;
         length = _length;
 
         // Setup texture channels
         for (int i=0; i<4; i++) {
-            iChannelNames[i] = _iChannel[i];
+            iChannelSrc[i] = _iChannelSrc[i];
+            iChannelFilter[i] = _iChannelFilter[i];
 
-            if (!iChannelNames[i].empty()) {
-                if (iChannelNames[i] == "sound") {
+            if (!iChannelSrc[i].empty()) {
+                if (iChannelSrc[i] == "sound") {
                     soundChannel = i;
                 }
                 else {
-                    ofLoadImage(iChannel[i], iChannelNames[i]);
+                    ofLoadImage(iChannel[i], iChannelSrc[i]);
                     iChannel[i].setTextureWrap(GL_REPEAT, GL_REPEAT);
 
-                    // TODO: Support different filters
-                    iChannel[i].enableMipmap();
-                    iChannel[i].generateMipmap();
-                    iChannel[i].setTextureMinMagFilter(GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR);
+                    if (iChannelFilter[i] == "nearest") {
+                        iChannel[i].setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
+                    }
+                    else if (iChannelFilter[i] == "linear") {
+                        iChannel[i].setTextureMinMagFilter(GL_LINEAR, GL_LINEAR);
+                    }
+                    // Assume that we always want mipmap if not specified otherwise
+                    else {
+                        iChannel[i].enableMipmap();
+                        iChannel[i].generateMipmap();
+                        iChannel[i].setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+                    }
                 }
             }
         }

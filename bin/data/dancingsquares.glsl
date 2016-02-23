@@ -27,6 +27,7 @@ void mainImage( out vec4 col, in vec2 p ) {
     eyes = max(eyes, smoothstep(0.0, 0.12, eyecenter.y));
     eyes = smoothstep(0.02, 0.01, eyes);
 
+
     col.rgb = (
         // Background
         vec3(0.24 / sqrt(p.y + 0.2), 0.23, 0.11) +
@@ -34,7 +35,7 @@ void mainImage( out vec4 col, in vec2 p ) {
         // Square
         vec3(square) *
         vec3(0.42 / p.y*0.52, 0.15 / p.y*0.82 + p.x*0.22, 0.21) +
-        smoothstep(0.49, 0.51, texture2D(iChannel1, p).r) * 0.25 +
+        texture2D(iChannel1, center).rgb * 0.25 +
 
         // Eyes
         -vec3(eyes) +

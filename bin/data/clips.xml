@@ -1,13 +1,73 @@
 <?xml version="1.0"?>
-<clip src="meltingpot" start="0" length="161" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="hypnotichole" start="161" length="152" time="2.75" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="sun" start="313" length="212" time="5.48333359" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="zebrabloc" start="525" length="151" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="pyramidtrip" start="676" length="29" time="-12.75" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="relaxingwind" start="705" length="217" time="6.55000019" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="policelight" start="922" length="45" time="10.166667" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="drugbots" start="967" length="218" time="8.26666641" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="twerking" start="1185" length="233" time="0" iChannel0="sound" iChannel1="" iChannel2="" iChannel3="" />
-<clip src="dancingsquares" start="1418" length="233" time="0" iChannel0="sound" iChannel1="tex15.png" iChannel2="" iChannel3="" />
-<clip src="cantharellus" start="1651" length="233" time="0" iChannel0="tex05.jpg" iChannel1="tex16.png" iChannel2="" iChannel3="" />
-<clip src="spinalinjury" start="1884" length="233" time="-2.0666666" iChannel0="" iChannel1="" iChannel2="" iChannel3="" />
+<clip src="meltingpot" start="0" length="161" time="0">
+	<iChannel src="sound" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="hypnotichole" start="161" length="152" time="2.75">
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="sun" start="313" length="212" time="5.48333359">
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="zebrabloc" start="525" length="151" time="0">
+	<iChannel src="sound" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="pyramidtrip" start="676" length="29" time="-12.75">
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="relaxingwind" start="705" length="217" time="6.55000019">
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="policelight" start="922" length="45" time="10.166667">
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="drugbots" start="967" length="218" time="8.26666641">
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="twerking" start="1185" length="233" time="0">
+	<iChannel src="sound" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="dancingsquares" start="1418" length="233" time="0">
+	<iChannel src="sound" filter="" />
+	<iChannel src="tex15.png" filter="nearest" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="cantharellus" start="1651" length="233" time="0">
+	<iChannel src="tex05.jpg" filter="linear" />
+	<iChannel src="tex16.png" filter="mipmap" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="spinalinjury" start="1884" length="233" time="-2.0666666">
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
