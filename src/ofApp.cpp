@@ -162,7 +162,11 @@ void ofApp::update() {
     // Get current playing clip
     if (isPlaying) {
         timelineMarker += 1;
-        timelineMarker = timelineMarker % (last->start + last->length);
+
+        if (timelineMarker > last->start + last->length) {
+            timelineMarker = 0;
+            player.setPositionMS((int) ((timelineMarker / FPS) * 1000));
+        }
     }
 
     timelineMarkerRect.x = timelineMarker - TIMELINE_MARKER_SIZE / 2;
