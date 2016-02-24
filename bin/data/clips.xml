@@ -53,13 +53,19 @@
 	<iChannel src="" filter="" />
 	<iChannel src="" filter="" />
 </clip>
-<clip src="cantharellus" start="1921" length="233" time="0">
+<clip src="cantharellus" start="1921" length="293" time="0">
 	<iChannel src="tex05.jpg" filter="linear" />
 	<iChannel src="tex16.png" filter="mipmap" />
 	<iChannel src="" filter="" />
 	<iChannel src="" filter="" />
 </clip>
-<clip src="happymemories" start="2154" length="436" time="0">
+<clip src="meltingpot" start="2214" length="196" time="0">
+	<iChannel src="sound" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+	<iChannel src="" filter="" />
+</clip>
+<clip src="happymemories" start="2410" length="436" time="0">
 	<iChannel src="" filter="" />
 	<iChannel src="" filter="" />
 	<iChannel src="" filter="" />

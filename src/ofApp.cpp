@@ -14,7 +14,7 @@ void ofApp::setup() {
 
     // Allocate texture for the spectrum analysis of the sound playing
     // through the ofSoundPlayer
-    fftTexture.allocate(SPECTRUM_WIDTH, 1, GL_RGBA, false);
+    fftTexture.allocate(SPECTRUM_WIDTH, 2, GL_RGBA, false);
     player.load("song.mp3");
 
     // Setup clips from XML file
@@ -104,17 +104,23 @@ void ofApp::saveClips() {
 
 void ofApp::update() {
     // Load spectrum analysis into texture
+    // TODO: Implement this in the same way as done in the web audio API
+    //       for getFloatFrequencyData: https://webaudio.github.io/web-audio-api/#fft-windowing-and-smoothing-over-time
     float * val = ofSoundGetSpectrum(512);
     for (int i = 0; i < SPECTRUM_WIDTH; i++){
         // Let signal dimminish over time to make the visual more pronounced
         fftSmoothed[i] *= 0.97;
 
         // Refresh signal if it is more powerful than the current signal
-        float fft = ofClamp(val[i] * 50.0, 0.0, 1.0);
-        if (fftSmoothed[i] < fft) fftSmoothed[i] = fft;
+        float fft = ofClamp(val[i] * 10.0, 0.0, 1.0);
+        if (fftSmoothed[i] < fft) {
+            fftSmoothed[i] = fft;
+        }
+
+        fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
     }
 
-    fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 1, GL_LUMINANCE);
+    fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 2, GL_LUMINANCE);
 
     // Scroll timeline when within timeline area.
     if (mouseY > ofGetHeight() - TIMELINE_HEIGHT) {
