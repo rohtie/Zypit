@@ -99,6 +99,10 @@ class Clip {
         shader.linkProgram();
     }
 
+    void reloadShader() {
+        setupShader();
+    }
+
     void reconstruct() {
         rect.x = start;
         rect.width = length;

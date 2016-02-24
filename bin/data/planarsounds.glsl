@@ -79,38 +79,29 @@ void mainImage (out vec4 color, in vec2 point) {
     vec3 col = vec3(0.0);
 
     if (distance > 0.0) {
-        // vec3 point = cameraPosition + rayDirection * distance;
-        // vec3 normal = getNormal(point);
-
-        // col += vec3(0.05, 0.01, 0.35);
-        // col += vec3(0.7, 1.0, 0.95) * max(dot(normal, light), 0.0);
-
-        // vec3 halfVector = normalize(light + normal);
-        // col += vec3(1.0) * pow(max(dot(normal, halfVector), 0.0), 1024.0);
-
-        // float att = clamp(1.0 - length(light - point) / 5.0, 0.0, 1.0); att *= att;
-        // col *= att;
-
-        // col *= vec3(smoothstep(0.25, 0.75, map(point + light))) + 0.5;
-
-        // if (point.y == 0.1) {
-        //     col = vec3(50.0);
-        // }
-
-        // col *= triPlanar(iChannel0, normal, point);
-
-        // col *= 5.0;
         vec3 point = cameraPosition + rayDirection * distance;
         vec3 normal = getNormal(point);
 
         col += vec3(0.05, 0.01, 0.35);
-        col /= texture2D(iChannel0, point.xx * point.yy * point.zz + 0.1).rgb;
         col += vec3(0.7, 1.0, 0.95) * max(dot(normal, light), 0.0);
 
         vec3 halfVector = normalize(light + normal);
         col += vec3(1.0) * pow(max(dot(normal, halfVector), 0.0), 1024.0);
 
+        float att = clamp(1.0 - length(light - point) / 5.0, 0.0, 1.0); att *= att;
+        col *= att;
+
+        col *= vec3(smoothstep(0.25, 0.75, map(point + light))) + 0.5;
+
+        if (point.y == 0.1) {
+            col = vec3(50.0);
+        }
+
         col *= triPlanar(iChannel0, normal, point);
+
+        col *= 5.0;
+
+
     }
 
     color.rgb = col;

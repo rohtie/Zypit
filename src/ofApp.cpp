@@ -344,6 +344,9 @@ void ofApp::keyPressed(int key) {
         orgTime = playing->time;
         changingClip = playing;
     }
+    else if (key == 'r') {
+        playing->reloadShader();
+    }
 
     // Openframeworks does not support checking of CTRL directly, so we are
     // using s instead of ctrl + s to save.

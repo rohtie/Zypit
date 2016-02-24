@@ -83,19 +83,19 @@
 	<iChannel src="" filter="" />
 	<iChannel src="" filter="" />
 </clip>
-<clip src="musicdistort1" start="3748" length="410" time="-4.6500001">
+<clip src="musicdistort1" start="3748" length="506" time="-4.6500001">
 	<iChannel src="sound" filter="" />
 	<iChannel src="" filter="" />
 	<iChannel src="" filter="" />
 	<iChannel src="" filter="" />
 </clip>
-<clip src="whirlpool128" start="4158" length="334" time="-4.6500001">
+<clip src="whirlpool128" start="4254" length="334" time="-5.0333333">
 	<iChannel src="sound" filter="" />
 	<iChannel src="tex19.png" filter="" />
 	<iChannel src="" filter="" />
 	<iChannel src="" filter="" />
 </clip>
-<clip src="planarsounds" start="4492" length="605" time="-2.41666675">
+<clip src="planarsounds" start="4588" length="605" time="-2.41666675">
 	<iChannel src="tex19.png" filter="" />
 	<iChannel src="sound" filter="" />
 	<iChannel src="" filter="" />
