@@ -228,6 +228,14 @@ void ofApp::draw() {
         height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
     );
 
+    std::stringstream time;
+    time << roundf((timelineMarker / FPS) * 100.0) / 100.0;
+    palanquinRegular.drawString(
+        time.str(),
+        TIMELINE_FONT_SIZE * 3,
+        height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+    );
+
     if (isExportMode && isPlaying) {
         palanquinRegular.drawString(
             "Rendering...",
