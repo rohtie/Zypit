@@ -74,6 +74,16 @@ void mainImage (out vec4 color, in vec2 point) {
     );
     vec3 rayDirection = normalize(vec3(point, -1.0));
 
+    if (iGlobalTime > 7.5) {
+        float a = clamp(0.0, 1.0, iGlobalTime - 7.5);
+        cameraPosition = mix(cameraPosition, vec3(0.0, 4.0, 0.0), a);
+        rayDirection = mix(rayDirection, vec3(rayDirection.x, -1.0, rayDirection.y), a);
+
+        // a *= 2.0;
+        // rayDirection.xz *= mat2(-sin(a), cos(a),
+                                 // cos(a), sin(a));
+    }
+
     float distance = intersect(cameraPosition, rayDirection);
 
     vec3 col = vec3(0.0);
