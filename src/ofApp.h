@@ -20,7 +20,9 @@ class ofApp : public ofBaseApp {
 
         ofSoundPlayer player;
         ofTexture fftTexture;
+        bool isPreprocessing = false;
         float* fftSmoothed;
+        vector<float> fftTimeline;
 
         ofRectangle timelineMarkerRect;
         int  timelineMarker = 0;
@@ -33,7 +35,7 @@ class ofApp : public ofBaseApp {
 
         ofFbo exportFbo;
         FILE *exportPipe;
-        bool isExportMode = false;
+        bool isExporting = false;
 
         ofFbo main;
 

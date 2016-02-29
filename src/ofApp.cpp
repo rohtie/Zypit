@@ -106,18 +106,29 @@ void ofApp::update() {
     // Load spectrum analysis into texture
     // TODO: Implement this in the same way as done in the web audio API
     //       for getFloatFrequencyData: https://webaudio.github.io/web-audio-api/#fft-windowing-and-smoothing-over-time
-    float * val = ofSoundGetSpectrum(512);
-    for (int i = 0; i < SPECTRUM_WIDTH; i++){
-        // Let signal dimminish over time to make the visual more pronounced
-        fftSmoothed[i] *= 0.97;
+    if (!isExporting) {
+        float * val = ofSoundGetSpectrum(512);
+        for (int i = 0; i < SPECTRUM_WIDTH; i++){
+            // Let signal dimminish over time to make the visual more pronounced
+            fftSmoothed[i] *= 0.97;
 
-        // Refresh signal if it is more powerful than the current signal
-        float fft = ofClamp(val[i] * 10.0, 0.0, 1.0);
-        if (fftSmoothed[i] < fft) {
-            fftSmoothed[i] = fft;
+            // Refresh signal if it is more powerful than the current signal
+            float fft = ofClamp(val[i] * 10.0, 0.0, 1.0);
+            if (fftSmoothed[i] < fft) {
+                fftSmoothed[i] = fft;
+            }
+
+            fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
+
+            if (isPreprocessing) {
+                fftTimeline.push_back(fftSmoothed[i]);
+            }
         }
-
-        fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
+    } else if (isExporting) {
+        for (int i=0; i<SPECTRUM_WIDTH; i++) {
+            fftSmoothed[i] = fftTimeline[i + timelineMarker * SPECTRUM_WIDTH];
+            fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
+        }
     }
 
     fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 2, GL_LUMINANCE);
@@ -170,8 +181,35 @@ void ofApp::update() {
         timelineMarker += 1;
 
         if (timelineMarker > last->start + last->length) {
+            // We have reached the end of the timeline
             timelineMarker = 0;
-            player.setPositionMS((int) ((timelineMarker / FPS) * 1000));
+            player.setPositionMS(0);
+
+            if (isPreprocessing) {
+                isPreprocessing = false;
+                isExporting = true;
+
+                // Open up a pipe to ffmpeg so that we can send PNG images to it
+                // which will be sequenced into a video file
+                stringstream ffmpeg;
+                ffmpeg <<
+                    "ffmpeg -y -f image2pipe -s " <<
+                    exportFbo.getWidth() << "x" << exportFbo.getHeight() <<
+                    " -i - -vcodec png -c:v libx264" <<
+                    " -r 60 -crf 25 out.mp4";
+
+                exportPipe = popen(ffmpeg.str().c_str(), "w");
+
+
+                player.stop();
+
+            }
+            else if (isExporting) {
+                // We are done exporting
+                isExporting = false;
+                pclose(exportPipe);
+                fftTimeline.clear();
+            }
         }
     }
 
@@ -246,12 +284,21 @@ void ofApp::draw() {
         height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
     );
 
-    if (isExportMode && isPlaying) {
-        palanquinRegular.drawString(
-            "Rendering...",
-            TIMELINE_FONT_SIZE * 3,
-            ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
-        );
+    if (isPlaying) {
+        if (isPreprocessing) {
+            palanquinRegular.drawString(
+                "Baking FFT...",
+                TIMELINE_FONT_SIZE * 6,
+                ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+            );
+        }
+        else if (isExporting) {
+            palanquinRegular.drawString(
+                "Rendering...",
+                TIMELINE_FONT_SIZE * 6,
+                ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+            );
+        }
     }
 
     // Visualize spectrum
@@ -286,7 +333,7 @@ void ofApp::render(int width, int height) {
 }
 
 void ofApp::exportFrame() {
-    if (isExportMode && isPlaying) {
+    if (isExporting && isPlaying) {
         exportFbo.begin();
             render(exportFbo.getWidth(), exportFbo.getHeight());
         exportFbo.end();
@@ -306,35 +353,44 @@ void ofApp::exportFrame() {
 
 void ofApp::keyPressed(int key) {
     if (key == ' ') {
-        isPlaying = !isPlaying;
+        if (isPreprocessing || isExporting) {
+            player.stop();
+            isPlaying = false;
+            fftTimeline.clear();
+        }
 
-        if (isPlaying) {
-            player.play();
+        if (isPreprocessing) {
+            isPreprocessing = false;
+        }
+        else if (isExporting) {
+            isExporting = false;
+            pclose(exportPipe);
         }
         else {
-            player.stop();
-        }
+            isPlaying = !isPlaying;
 
-        if (isExportMode) {
             if (isPlaying) {
-                // Open up a pipe to ffmpeg so that we can send PNG images to it
-                // which will be sequenced into a video file
-                stringstream ffmpeg;
-                ffmpeg <<
-                    "ffmpeg -y -f image2pipe -s " <<
-                    exportFbo.getWidth() << "x" << exportFbo.getHeight() <<
-                    " -i - -vcodec png -c:v libx264" <<
-                    " -r 60 -crf 25 out.mp4";
-
-                exportPipe = popen(ffmpeg.str().c_str(), "w");
+                player.play();
             }
             else {
-                pclose(exportPipe);
+                player.stop();
             }
         }
     }
+    else if (isPreprocessing || isExporting) {
+        // Prevent the other keys from working while preprocessing or exporting
+        return;
+    }
     else if (key == 'e') {
-        isExportMode = !isExportMode;
+        // ofLogWarning() << "Allocating float of " << (last->start + last->length) * SPECTRUM_WIDTH << " size\n";
+
+        // fftTimeline = new float[(last->start + last->length) * SPECTRUM_WIDTH];
+        isPreprocessing = true;
+        timelineMarker = 0;
+        isPlaying = true;
+
+        player.setPositionMS(0);
+        player.play();
     }
     else if (key == 't') {
         // Assume that the current playing clip is the one we want to change.
