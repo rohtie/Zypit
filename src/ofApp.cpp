@@ -194,11 +194,29 @@ void ofApp::update() {
                 // which will be sequenced into a video file
                 stringstream ffmpeg;
                 ffmpeg <<
-                    "ffmpeg -y -f image2pipe -s " <<
-                    exportFbo.getWidth() << "x" << exportFbo.getHeight() <<
-                    " -i - -i data/song.mp3 -vcodec png -c:v libx264" <<
+                    // thread_queue_size is raised to avoid discarded frames
+                    // image2pipe makes ffmpeg accept images through the pipe
+                    "ffmpeg -thread_queue_size 512 -y -f image2pipe" <<
+
+                    // Set resolution
+                    " -s " << EXPORT_WIDTH << "x" << EXPORT_HEIGHT <<
+
+                    // Set video input source to pipe at FPS rate
+                    " -r " << (int) FPS << " -i -" <<
+
+                    // Set audio input source to mp3 file at FPS rate
+                    " -r " << (int) FPS << " -i data/song.mp3" <<
+
+                    // Set input image type to png and output video to x264
+                    " -vcodec png -c:v libx264" <<
+
+                    // ffmpeg has to be set to experimental mode to allow mp3
+                    // file to merged into the video output
                     " -c:a aac -strict experimental" <<
-                    " -r " << FPS << " -crf 25 out.mp4";
+
+                    // Set output video at FPS rate
+                    // 18 crf ensures a visually lossless quality
+                    " -r " << (int) FPS << " -crf 18 out.mp4";
 
                 exportPipe = popen(ffmpeg.str().c_str(), "w");
                 player.stop();
