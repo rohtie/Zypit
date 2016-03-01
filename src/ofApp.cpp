@@ -6,6 +6,7 @@
 
 void ofApp::setup() {
     ofBackground(BG_COLOR);
+    ofSetFrameRate(FPS);
 
     palanquinRegular.load("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
 
@@ -69,7 +70,7 @@ void ofApp::setup() {
     timelineMarkerRect.height = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 
     // Setup video export
-    exportFbo.allocate(1280, 720);
+    exportFbo.allocate(1920, 1080);
 
     fftSmoothed = new float[8192];
     for (int i = 0; i < 8192; i++){
@@ -195,20 +196,20 @@ void ofApp::update() {
                 ffmpeg <<
                     "ffmpeg -y -f image2pipe -s " <<
                     exportFbo.getWidth() << "x" << exportFbo.getHeight() <<
-                    " -i - -vcodec png -c:v libx264" <<
-                    " -r 60 -crf 25 out.mp4";
+                    " -i - -i data/song.mp3 -vcodec png -c:v libx264" <<
+                    " -c:a aac -strict experimental" <<
+                    " -r " << FPS << " -crf 25 out.mp4";
 
                 exportPipe = popen(ffmpeg.str().c_str(), "w");
-
-
                 player.stop();
-
             }
             else if (isExporting) {
                 // We are done exporting
                 isExporting = false;
                 pclose(exportPipe);
                 fftTimeline.clear();
+                isPlaying = false;
+                player.stop();
             }
         }
     }
@@ -231,11 +232,13 @@ void ofApp::draw() {
     int height = ofGetHeight() - TIMELINE_HEIGHT;
 
     // MAIN SCREEN
-    main.allocate(width, height);
-    main.begin();
-    render(width, height);
-    main.end();
-    main.draw(0, 0);
+    if (!isPreprocessing && !isExporting) {
+        main.allocate(width, height);
+        main.begin();
+        render(width, height);
+        main.end();
+        main.draw(0, 0);
+    }
 
     // Export
     exportFrame();
@@ -288,14 +291,14 @@ void ofApp::draw() {
         if (isPreprocessing) {
             palanquinRegular.drawString(
                 "Baking FFT...",
-                TIMELINE_FONT_SIZE * 6,
+                TIMELINE_FONT_SIZE * 8,
                 ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
             );
         }
         else if (isExporting) {
             palanquinRegular.drawString(
                 "Rendering...",
-                TIMELINE_FONT_SIZE * 6,
+                TIMELINE_FONT_SIZE * 8,
                 ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
             );
         }

@@ -3,6 +3,8 @@
 #if !defined(CONSTANT_VALUES)
 #define CONSTANT_VALUES 1
 const float FPS = 60.0;
+const int EXPORT_WIDTH = 1920;
+const int EXPORT_HEIGHT = 1080;
 
 const int BG_COLOR = 60;
 
