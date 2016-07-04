@@ -28,3 +28,4 @@ In the generated app directory execute the following:
     git reset origin/master
     git checkout .
 
+If you're running the binary from an IDE, make sure the current working directory is set to `./bin`.
