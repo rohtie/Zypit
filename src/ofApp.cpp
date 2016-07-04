@@ -4,6 +4,23 @@
 #include "constants.h"
 #include "clip.h"
 
+/*
+
+
+TODO:
+
+Pre-Solskogen:
+	1) Create player only mode where there are no GUI elements and it auto-plays in fullscreen.
+	2) Make it possible to add scenes without having to put them manually into the clips.xml
+	3) Add watcher for clip shaders, so that it is instantly refreshed when saving the shader
+
+Post-Solskogen:
+	1) Port export functionality, so that it can be used with windows
+	2) Export in 1080p and upload to vimeo
+
+
+*/
+
 void ofApp::setup() {
     ofBackground(BG_COLOR);
     ofSetFrameRate(FPS);
@@ -20,7 +37,10 @@ void ofApp::setup() {
 
     // Setup clips from XML file
     pugi::xml_document doc;
-    doc.load_file("data/clips.xml");
+    
+	pugi::xml_parse_result result = doc.load_file("data/clips.xml");
+
+	std::cout << "Load result: " << result.description() << ", mesh name: " << doc.child("mesh").attribute("name").value() << std::endl;
 
     Clip *current = NULL;
 
@@ -186,7 +206,7 @@ void ofApp::update() {
             timelineMarker = 0;
             player.setPositionMS(0);
 
-            if (isPreprocessing) {
+            /*if (isPreprocessing) {
                 isPreprocessing = false;
                 isExporting = true;
 
@@ -228,7 +248,7 @@ void ofApp::update() {
                 fftTimeline.clear();
                 isPlaying = false;
                 player.stop();
-            }
+            }*/
         }
     }
 
@@ -374,20 +394,20 @@ void ofApp::exportFrame() {
 
 void ofApp::keyPressed(int key) {
     if (key == ' ') {
-        if (isPreprocessing || isExporting) {
+        /*if (isPreprocessing || isExporting) {
             player.stop();
             isPlaying = false;
             fftTimeline.clear();
-        }
+        }*/
 
-        if (isPreprocessing) {
+        /*if (isPreprocessing) {
             isPreprocessing = false;
         }
         else if (isExporting) {
             isExporting = false;
             pclose(exportPipe);
         }
-        else {
+        else {*/
             isPlaying = !isPlaying;
 
             if (isPlaying) {
@@ -396,7 +416,7 @@ void ofApp::keyPressed(int key) {
             else {
                 player.stop();
             }
-        }
+        /*}*/
     }
     else if (isPreprocessing || isExporting) {
         // Prevent the other keys from working while preprocessing or exporting
