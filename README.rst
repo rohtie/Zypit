@@ -6,6 +6,7 @@ Features:
 
 * Simple video-like editor with a single track
 * Shadertoy shaders can be plugged in directly
+* Texture support similar to shadertoy with filter choices
 * Music is attached to shaders as a FFT texture
 * Live reload of shaders when saved
 * Stripped down player for release of demo
