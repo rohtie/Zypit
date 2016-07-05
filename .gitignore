@@ -5,7 +5,7 @@ Makefile
 *.qbs
 *.rc
 *.vcxproj
-*.vcxproj.filters
+*.vcxproj.*
 
 obj/
 

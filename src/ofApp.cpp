@@ -25,7 +25,7 @@ void ofApp::setup() {
     ofBackground(BG_COLOR);
     ofSetFrameRate(FPS);
 
-    palanquinRegular.load("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
+    palanquinRegular.load("../Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
 
     // Normalize texture coordinates so that they are within 0 to 1 range
     ofDisableArbTex();
@@ -81,7 +81,7 @@ void ofApp::setup() {
     }
 
     string iChannel[4];
-    defaultClip = new Clip("default", 0, 200, 0.0, iChannel, iChannel, palanquinRegular);
+    defaultClip = new Clip("../default", 0, 200, 0.0, iChannel, iChannel, palanquinRegular);
     playing = first;
 
     // Setup timeline
