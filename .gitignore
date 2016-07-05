@@ -8,14 +8,7 @@ Makefile
 *.vcxproj.*
 
 obj/
-
-# Ignore all of bin/ except bin/data/
-!bin/
-bin/*
-!bin/data/
-
-bin/data/.gitkeep
-bin/data/song.mp3
+bin/
 
 buildLog
 runLog
