@@ -3,6 +3,9 @@
 #include "ofMain.h"
 #include "constants.h"
 
+#include "Poco/Timestamp.h"
+#include "Poco/File.h"
+
 
 class Clip {
     public:
@@ -33,6 +36,8 @@ class Clip {
         string iChannelFilter[4];
 
         int soundChannel = -1;
+
+		Poco::Timestamp lastTimestamp;
 
     Clip(string _src, int _start, int _length, float _time, string* _iChannelSrc, string* _iChannelFilter, ofTrueTypeFont &_font) {
         src = _src;
@@ -83,6 +88,9 @@ class Clip {
 
     void setupShader() {
         shader.setupShaderFromFile(GL_VERTEX_SHADER, "../vertex.glsl");
+		
+		Poco::File pocoShaderFile("data/" + src + ".glsl");
+		lastTimestamp = pocoShaderFile.getLastModified();		
 
         ifstream shaderFile("data/" + src + ".glsl");
         stringstream shaderSource;
@@ -176,6 +184,15 @@ class Clip {
     }
 
     int update(int x, int y) {
+		// Reload shader if shader file has been modified
+		// TODO: Use Poco::DirectoryWatcher when they fix the thread crashing
+		Poco::File shaderFile("data/" + src + ".glsl");
+		Poco::Timestamp timestamp = shaderFile.getLastModified();
+		if (timestamp != lastTimestamp) {
+			lastTimestamp = timestamp;
+			reloadShader();
+		}
+
         if (isSelected) {
             start = x - selectedPos;
 
