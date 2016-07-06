@@ -9,6 +9,10 @@ Makefile
 *.dll
 *.exp
 *.pdb
+*.exe
+*.ilk
+*.lib
+
 
 obj/
 bin/data/
