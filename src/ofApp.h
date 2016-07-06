@@ -32,10 +32,12 @@ class ofApp : public ofBaseApp {
         int changingClipTimeBase = 0;
         Clip* changingClip = NULL;
         float orgTime = 0.0;
-
+		
+		#ifdef __linux__
         ofFbo exportFbo;
         FILE *exportPipe;
         bool isExporting = false;
+		#endif
 
         ofFbo main;
 
@@ -45,7 +47,10 @@ class ofApp : public ofBaseApp {
         void update();
         void draw();
         void render(int width, int height);
+		
+		#ifdef __linux__
         void exportFrame();
+		#endif
 
         void keyPressed(int key);
         void keyReleased(int key);

@@ -89,8 +89,10 @@ void ofApp::setup() {
     timelineMarkerRect.width = TIMELINE_MARKER_SIZE;
     timelineMarkerRect.height = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 
+	#ifdef __linux__
     // Setup video export
     exportFbo.allocate(1920, 1080);
+	#endif
 
     fftSmoothed = new float[8192];
     for (int i = 0; i < 8192; i++){
@@ -127,7 +129,9 @@ void ofApp::update() {
     // Load spectrum analysis into texture
     // TODO: Implement this in the same way as done in the web audio API
     //       for getFloatFrequencyData: https://webaudio.github.io/web-audio-api/#fft-windowing-and-smoothing-over-time
+	#ifdef __linux__
     if (!isExporting) {
+	#endif
         float * val = ofSoundGetSpectrum(512);
         for (int i = 0; i < SPECTRUM_WIDTH; i++){
             // Let signal dimminish over time to make the visual more pronounced
@@ -145,12 +149,14 @@ void ofApp::update() {
                 fftTimeline.push_back(fftSmoothed[i]);
             }
         }
+	#ifdef __linux__
     } else if (isExporting) {
         for (int i=0; i<SPECTRUM_WIDTH; i++) {
             fftSmoothed[i] = fftTimeline[i + timelineMarker * SPECTRUM_WIDTH];
             fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
         }
     }
+	#endif
 
     fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 2, GL_LUMINANCE);
 
@@ -206,7 +212,8 @@ void ofApp::update() {
             timelineMarker = 0;
             player.setPositionMS(0);
 
-            /*if (isPreprocessing) {
+			#ifdef __linux__
+            if (isPreprocessing) {
                 isPreprocessing = false;
                 isExporting = true;
 
@@ -248,7 +255,8 @@ void ofApp::update() {
                 fftTimeline.clear();
                 isPlaying = false;
                 player.stop();
-            }*/
+            }
+			#endif
         }
     }
 
@@ -270,16 +278,20 @@ void ofApp::draw() {
     int height = ofGetHeight() - TIMELINE_HEIGHT;
 
     // MAIN SCREEN
+	#ifdef __linux__
     if (!isPreprocessing && !isExporting) {
+	#endif
         main.allocate(width, height);
         main.begin();
         render(width, height);
         main.end();
         main.draw(0, 0);
-    }
-
+	#ifdef __linux__
+	}
+		
     // Export
     exportFrame();
+	#endif
 
     // TIMELINE
     timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
@@ -325,6 +337,7 @@ void ofApp::draw() {
         height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
     );
 
+	#ifdef __linux__
     if (isPlaying) {
         if (isPreprocessing) {
             palanquinRegular.drawString(
@@ -341,6 +354,7 @@ void ofApp::draw() {
             );
         }
     }
+	#endif
 
     // Visualize spectrum
     for (int i = 0; i < SPECTRUM_WIDTH; i++) {
@@ -373,6 +387,7 @@ void ofApp::render(int width, int height) {
     playing->shader.end();
 }
 
+#ifdef __linux__
 void ofApp::exportFrame() {
     if (isExporting && isPlaying) {
         exportFbo.begin();
@@ -391,23 +406,27 @@ void ofApp::exportFrame() {
         fwrite(buffer.getData(), buffer.size(), 1, exportPipe);
     }
 }
+#endif
+
 
 void ofApp::keyPressed(int key) {
     if (key == ' ') {
-        /*if (isPreprocessing || isExporting) {
+		#ifdef __linux__
+        if (isPreprocessing || isExporting) {
             player.stop();
             isPlaying = false;
             fftTimeline.clear();
-        }*/
+        }
 
-        /*if (isPreprocessing) {
+        if (isPreprocessing) {
             isPreprocessing = false;
         }
         else if (isExporting) {
             isExporting = false;
             pclose(exportPipe);
         }
-        else {*/
+        else {
+		#endif
             isPlaying = !isPlaying;
 
             if (isPlaying) {
@@ -416,16 +435,16 @@ void ofApp::keyPressed(int key) {
             else {
                 player.stop();
             }
-        /*}*/
+		#ifdef __linux__
+        }
+	    #endif
     }
+	#ifdef __linux__
     else if (isPreprocessing || isExporting) {
         // Prevent the other keys from working while preprocessing or exporting
         return;
     }
     else if (key == 'e') {
-        // ofLogWarning() << "Allocating float of " << (last->start + last->length) * SPECTRUM_WIDTH << " size\n";
-
-        // fftTimeline = new float[(last->start + last->length) * SPECTRUM_WIDTH];
         isPreprocessing = true;
         timelineMarker = 0;
         isPlaying = true;
@@ -433,6 +452,7 @@ void ofApp::keyPressed(int key) {
         player.setPositionMS(0);
         player.play();
     }
+	#endif
     else if (key == 't') {
         // Assume that the current playing clip is the one we want to change.
         isChangingClipTime = !isChangingClipTime;
@@ -440,9 +460,6 @@ void ofApp::keyPressed(int key) {
         changingClipTimeBase = mouseX;
         orgTime = playing->time;
         changingClip = playing;
-    }
-    else if (key == 'r') {
-        playing->reloadShader();
     }
 
     // Openframeworks does not support checking of CTRL directly, so we are

@@ -7,10 +7,10 @@ Features:
 * Simple video-like editor with a single track
 * Shadertoy shaders can be plugged in directly
 * Texture support similar to shadertoy with filter choices
-* Music is attached to shaders as a FFT texture
+* Music is attached to shaders as a FFT spectrum analysis texture
 * Live reload of shaders when saved
 * Stripped down player for release of demo
-* Export demo to mp4 video in any resolution (POSIX only, windows support planned)
+* Export demo to mp4 video in any resolution (Linux only)
 
 .. image:: http://i.imgur.com/x1gSepQ.png
 
