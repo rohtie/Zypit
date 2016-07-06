@@ -8,7 +8,12 @@ const int EXPORT_HEIGHT = 1080;
 
 const int BG_COLOR = 60;
 
+#ifndef STANDALONE_PLAYER
 const int TIMELINE_HEIGHT = 50;
+#else
+// No timeline on standalone player
+const int TIMELINE_HEIGHT = 0;
+#endif
 const int TIMELINE_CLIP_HEIGHT = 40;
 const int TIMELINE_SCOLLING_AREA = 50;
 const int TIMELINE_SCOLLING_SPEED = 25;

@@ -6,12 +6,14 @@
 
 class ofApp : public ofBaseApp {
     public:
-        ofTrueTypeFont palanquinRegular;
-
         ofShader shader;
+
+		#ifndef STANDALONE_PLAYER
+		ofTrueTypeFont palanquinRegular;
 
         ofFbo timeline;
         int timelinePos = 0;
+		#endif
 
         Clip *first;
         Clip *last;
@@ -20,36 +22,49 @@ class ofApp : public ofBaseApp {
 
         ofSoundPlayer player;
         ofTexture fftTexture;
+		float* fftSmoothed;
+
+		#ifndef STANDALONE_PLAYER
+		bool isPlaying = false;
+		#else
+		bool isPlaying = true;
+		#endif
+		int  timelineMarker = 0;
+
+		#ifndef STANDALONE_PLAYER
         bool isPreprocessing = false;
-        float* fftSmoothed;
         vector<float> fftTimeline;
 
         ofRectangle timelineMarkerRect;
-        int  timelineMarker = 0;
-        bool isPlaying      = false;
         bool isMovingMarker = false;
         bool isChangingClipTime = false;
         int changingClipTimeBase = 0;
         Clip* changingClip = NULL;
         float orgTime = 0.0;
-		
+
 		#ifdef __linux__
         ofFbo exportFbo;
         FILE *exportPipe;
         bool isExporting = false;
 		#endif
+		#endif
 
         ofFbo main;
 
         void setup();
+
+		#ifndef STANDALONE_PLAYER
         void saveClips();
+		#endif
 
         void update();
         void draw();
         void render(int width, int height);
 		
+		#ifndef STANDALONE_PLAYER
 		#ifdef __linux__
         void exportFrame();
+		#endif
 		#endif
 
         void keyPressed(int key);

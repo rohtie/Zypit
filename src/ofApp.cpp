@@ -24,8 +24,10 @@ Post-Solskogen:
 void ofApp::setup() {
     ofBackground(BG_COLOR);
     ofSetFrameRate(FPS);
-
+	
+	#ifndef STANDALONE_PLAYER
     palanquinRegular.load("../Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
+	#endif
 
     // Normalize texture coordinates so that they are within 0 to 1 range
     ofDisableArbTex();
@@ -56,6 +58,7 @@ void ofApp::setup() {
             iChannel = iChannel.next_sibling();
         }
 
+		#ifndef STANDALONE_PLAYER
         Clip *newClip = new Clip(
             clip.attribute("src").value(),
             clip.attribute("start").as_int(),
@@ -64,6 +67,15 @@ void ofApp::setup() {
             iChannelSrc, iChannelFilter,
             palanquinRegular
         );
+		#else
+		Clip *newClip = new Clip(
+			clip.attribute("src").value(),
+			clip.attribute("start").as_int(),
+			clip.attribute("length").as_int(),
+			clip.attribute("time").as_float(),
+			iChannelSrc, iChannelFilter
+		);
+		#endif
 
         if (current == NULL) {
             first = newClip;
@@ -81,9 +93,14 @@ void ofApp::setup() {
     }
 
     string iChannel[4];
+	#ifndef STANDALONE_PLAYER
     defaultClip = new Clip("../default", 0, 200, 0.0, iChannel, iChannel, palanquinRegular);
+	#else
+	defaultClip = new Clip("../default", 0, 200, 0.0, iChannel, iChannel);
+	#endif
     playing = first;
 
+	#ifndef STANDALONE_PLAYER
     // Setup timeline
     timelineMarkerRect.x = -TIMELINE_MARKER_SIZE / 2;
     timelineMarkerRect.width = TIMELINE_MARKER_SIZE;
@@ -93,13 +110,20 @@ void ofApp::setup() {
     // Setup video export
     exportFbo.allocate(1920, 1080);
 	#endif
+	#endif
 
     fftSmoothed = new float[8192];
     for (int i = 0; i < 8192; i++){
         fftSmoothed[i] = 0;
     }
+	
+	#ifdef STANDALONE_PLAYER
+	// Start playing immediately when in standalone player mode
+	player.play();
+	#endif
 }
 
+#ifndef STANDALONE_PLAYER
 void ofApp::saveClips() {
     pugi::xml_document doc;
 
@@ -124,6 +148,7 @@ void ofApp::saveClips() {
 
     doc.save_file("data/clips.xml");
 }
+#endif
 
 void ofApp::update() {
     // Load spectrum analysis into texture
@@ -144,10 +169,12 @@ void ofApp::update() {
             }
 
             fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
-
+			
+			#ifdef __linux__
             if (isPreprocessing) {
                 fftTimeline.push_back(fftSmoothed[i]);
             }
+			#endif
         }
 	#ifdef __linux__
     } else if (isExporting) {
@@ -160,6 +187,9 @@ void ofApp::update() {
 
     fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 2, GL_LUMINANCE);
 
+	Clip *current = first;
+
+	#ifndef STANDALONE_PLAYER
     // Scroll timeline when within timeline area.
     if (mouseY > ofGetHeight() - TIMELINE_HEIGHT) {
         if (mouseX < TIMELINE_SCOLLING_AREA) {
@@ -174,7 +204,6 @@ void ofApp::update() {
     int y = mouseY - ofGetHeight() - TIMELINE_HEIGHT;
 
     // Update clips
-    Clip *current = first;
     while (current != NULL) {
         int res = current->update(x, y);
 
@@ -202,15 +231,21 @@ void ofApp::update() {
         timelineMarker = x;
         player.setPositionMS((int) ((timelineMarker / FPS) * 1000));
     }
+	#endif
 
     // Get current playing clip
     if (isPlaying) {
         timelineMarker += 1;
 
         if (timelineMarker > last->start + last->length) {
+			#ifndef STANDALONE_PLAYER
             // We have reached the end of the timeline
             timelineMarker = 0;
             player.setPositionMS(0);
+			#else	
+			// Demo is finished, close it
+			std::exit(1);
+			#endif
 
 			#ifdef __linux__
             if (isPreprocessing) {
@@ -259,8 +294,10 @@ void ofApp::update() {
 			#endif
         }
     }
-
+	
+	#ifndef STANDALONE_PLAYER
     timelineMarkerRect.x = timelineMarker - TIMELINE_MARKER_SIZE / 2;
+	#endif
 
     playing = defaultClip;
 
@@ -278,14 +315,17 @@ void ofApp::draw() {
     int height = ofGetHeight() - TIMELINE_HEIGHT;
 
     // MAIN SCREEN
+	#ifndef STANDALONE_PLAYER
 	#ifdef __linux__
     if (!isPreprocessing && !isExporting) {
+	#endif
 	#endif
         main.allocate(width, height);
         main.begin();
         render(width, height);
         main.end();
         main.draw(0, 0);
+	#ifndef STANDALONE_PLAYER
 	#ifdef __linux__
 	}
 		
@@ -365,6 +405,7 @@ void ofApp::draw() {
             ofGetHeight() - TIMELINE_HEIGHT - 1 - magnitude,
             1, magnitude);
     }
+	#endif
 }
 
 void ofApp::render(int width, int height) {
@@ -387,6 +428,7 @@ void ofApp::render(int width, int height) {
     playing->shader.end();
 }
 
+#ifndef STANDALONE_PLAYER
 #ifdef __linux__
 void ofApp::exportFrame() {
     if (isExporting && isPlaying) {
@@ -407,9 +449,10 @@ void ofApp::exportFrame() {
     }
 }
 #endif
-
+#endif
 
 void ofApp::keyPressed(int key) {
+	#ifndef STANDALONE_PLAYER
     if (key == ' ') {
 		#ifdef __linux__
         if (isPreprocessing || isExporting) {
@@ -467,12 +510,14 @@ void ofApp::keyPressed(int key) {
     else if (key == 's') {
         saveClips();
     }
+	#endif
 }
 
 void ofApp::keyReleased(int key) {
 }
 
 void ofApp::mouseMoved(int x, int y) {
+	#ifndef STANDALONE_PLAYER
     if (isChangingClipTime) {
         // If the clip has been changed, we disable time changing to prevent
         // unintuitive time changes on other clips.
@@ -483,12 +528,14 @@ void ofApp::mouseMoved(int x, int y) {
 
         playing->time = orgTime + (changingClipTimeBase - x) / FPS;
     }
+	#endif
 }
 
 void ofApp::mouseDragged(int x, int y, int button) {
 }
 
 void ofApp::mousePressed(int x, int y, int button) {
+	#ifndef STANDALONE_PLAYER
     // Make sure we click on the correct part of the timeline
     x += timelinePos;
     y -= ofGetHeight() - TIMELINE_HEIGHT;
@@ -503,9 +550,11 @@ void ofApp::mousePressed(int x, int y, int button) {
         current->inside(x, y);
         current = current->right;
     }
+	#endif	
 }
 
 void ofApp::mouseReleased(int x, int y, int button) {
+	#ifndef STANDALONE_PLAYER
     // Make sure we click on the correct part of the timeline
     x += timelinePos;
     y -= ofGetHeight() - TIMELINE_HEIGHT;
@@ -519,6 +568,7 @@ void ofApp::mouseReleased(int x, int y, int button) {
         current->deSelect();
         current = current->right;
     }
+	#endif
 }
 
 void ofApp::windowResized(int w, int h) {

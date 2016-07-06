@@ -21,8 +21,7 @@ class Clip {
         Clip *right = NULL;
 
         ofRectangle rect;
-        ofTrueTypeFont font;
-
+		
         bool isSelected = false;
         int selectedPos = 0;
 
@@ -37,9 +36,16 @@ class Clip {
 
         int soundChannel = -1;
 
+		#ifndef STANDALONE_PLAYER
+		ofTrueTypeFont font;
 		Poco::Timestamp lastTimestamp;
+		#endif
 
+	#ifndef STANDALONE_PLAYER
     Clip(string _src, int _start, int _length, float _time, string* _iChannelSrc, string* _iChannelFilter, ofTrueTypeFont &_font) {
+	#else
+	Clip(string _src, int _start, int _length, float _time, string* _iChannelSrc, string* _iChannelFilter) {
+	#endif
         src = _src;
         start = _start;
         length = _length;
@@ -77,20 +83,24 @@ class Clip {
 
         time = _time;
 
-        font = _font;
-
-        rect.height = TIMELINE_CLIP_HEIGHT;
+		rect.height = TIMELINE_CLIP_HEIGHT;
         rect.y = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 
+		#ifndef STANDALONE_PLAYER
+		font = _font;
         reconstruct();
+		#endif
+
         setupShader();
     }
 
     void setupShader() {
         shader.setupShaderFromFile(GL_VERTEX_SHADER, "../vertex.glsl");
 		
+		#ifndef STANDALONE_PLAYER
 		Poco::File pocoShaderFile("data/" + src + ".glsl");
 		lastTimestamp = pocoShaderFile.getLastModified();		
+		#endif
 
         ifstream shaderFile("data/" + src + ".glsl");
         stringstream shaderSource;
@@ -109,6 +119,7 @@ class Clip {
         shader.linkProgram();
     }
 
+	#ifndef STANDALONE_PLAYER
     void reloadShader() {
         setupShader();
     }
@@ -270,4 +281,5 @@ class Clip {
         ofSetColor(TIMELINE_FONT_COLOR);
         font.drawString(src, rect.x + TIMELINE_FONT_SIZE / 2, rect.height / 2 + TIMELINE_FONT_SIZE / 2);
     }
+	#endif
 };
