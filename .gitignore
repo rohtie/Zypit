@@ -6,9 +6,12 @@ Makefile
 *.rc
 *.vcxproj
 *.vcxproj.*
+*.dll
+*.exp
+*.pdb
 
 obj/
-bin/
+bin/data/
 
 buildLog
 runLog

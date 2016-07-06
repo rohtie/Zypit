@@ -82,7 +82,7 @@ class Clip {
     }
 
     void setupShader() {
-        shader.setupShaderFromFile(GL_VERTEX_SHADER, "vertex.glsl");
+        shader.setupShaderFromFile(GL_VERTEX_SHADER, "../vertex.glsl");
 
         ifstream shaderFile("data/" + src + ".glsl");
         stringstream shaderSource;
