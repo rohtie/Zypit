@@ -10,9 +10,9 @@
 TODO:
 
 Pre-Solskogen:
-	1) Create player only mode where there are no GUI elements and it auto-plays in fullscreen.
+	1) Create player only mode where there are no GUI elements and it auto-plays in fullscreen. [DONE]
 	2) Make it possible to add scenes without having to put them manually into the clips.xml
-	3) Add watcher for clip shaders, so that it is instantly refreshed when saving the shader
+	3) Add watcher for clip shaders, so that it is instantly refreshed when saving the shader [DONE]
 
 Post-Solskogen:
 	1) Port export functionality, so that it can be used with windows
@@ -29,6 +29,8 @@ void ofApp::setup() {
     palanquinRegular.load("../Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
 	#endif
 
+	Clip *current = NULL;
+
     // Normalize texture coordinates so that they are within 0 to 1 range
     ofDisableArbTex();
 
@@ -39,12 +41,7 @@ void ofApp::setup() {
 
     // Setup clips from XML file
     pugi::xml_document doc;
-    
 	pugi::xml_parse_result result = doc.load_file("data/clips.xml");
-
-	std::cout << "Load result: " << result.description() << ", mesh name: " << doc.child("mesh").attribute("name").value() << std::endl;
-
-    Clip *current = NULL;
 
     for (pugi::xml_node clip = doc.first_child(); clip; clip = clip.next_sibling()) {
         string iChannelSrc[4];
