@@ -25,7 +25,7 @@ void ofApp::setup() {
     ofSetFrameRate(FPS);
 	
 	#ifndef STANDALONE_PLAYER
-    palanquinRegular.load("../Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
+    palanquinRegular.load("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
 	#endif
 
 	Clip *current = NULL;
@@ -36,11 +36,11 @@ void ofApp::setup() {
     // Allocate texture for the spectrum analysis of the sound playing
     // through the ofSoundPlayer
     fftTexture.allocate(SPECTRUM_WIDTH, 2, GL_RGBA, false);
-    player.load("song.mp3");
+    player.load("project/song.mp3");
 
     // Setup clips from XML file
     pugi::xml_document doc;
-	pugi::xml_parse_result result = doc.load_file("data/clips.xml");
+	pugi::xml_parse_result result = doc.load_file("data/project/clips.xml");
 
     for (pugi::xml_node clip = doc.first_child(); clip; clip = clip.next_sibling()) {
         string iChannelSrc[4];
@@ -94,8 +94,14 @@ void ofApp::setup() {
 	#else
 	defaultClip = new Clip("../default", 0, 200, 0.0, iChannel, iChannel);
 	#endif
-    playing = first;
 
+	if (result.status == pugi::status_file_not_found) {
+		first = defaultClip;
+		last = defaultClip;
+	}
+	
+	playing = first;
+	
 	#ifndef STANDALONE_PLAYER
     // Setup timeline
     timelineMarkerRect.x = -TIMELINE_MARKER_SIZE / 2;
@@ -142,23 +148,35 @@ void ofApp::saveClips() {
         current = current->right;
     }
 
-    doc.save_file("data/clips.xml");
+    doc.save_file("data/project/clips.xml");
 }
 void ofApp::newClip() {
-	ofFile newFile("../newclip.glsl");
-	newFile.copyTo(newClipName + ".glsl");
+	ofFile newFile("newclip.glsl");
+	newFile.copyTo("project/" + newClipName + ".glsl");
 
 	int start = last->start + last->length;
-	
+
+	if (last == defaultClip) {
+		start = 0;
+	}
+
 	// New clips always start with iChannel0 set to the music
 	string iChannelSrc[] = {"sound", "", "", ""};
 	string iChannelFilter[] = {"", "", "", ""};
 
 	Clip *newClip = new Clip(newClipName, start, 300, 0.0, iChannelSrc, iChannelFilter, palanquinRegular);
 
-	last->right = newClip;
-	newClip->left = last;
-	last = newClip;
+	if (last == defaultClip) {
+		first = newClip;
+		last = newClip;
+	}
+	else {
+		last->right = newClip;
+		newClip->left = last;
+		last = newClip;
+	}
+
+	newClipName = "";
 }
 #endif
 
@@ -562,7 +580,7 @@ void ofApp::keyPressed(int key) {
 		isAddingNewClip = true;
 	}
 	// Delete clip
-	else if (key == 'x' && playing != defaultClip) {
+	else if (key == 'x') {
 		// There has to be at least one clip left
 		if (playing->left == NULL && playing->right == NULL) {
 			return;

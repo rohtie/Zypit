@@ -95,14 +95,14 @@ class Clip {
     }
 
     void setupShader() {
-        shader.setupShaderFromFile(GL_VERTEX_SHADER, "../vertex.glsl");
+        shader.setupShaderFromFile(GL_VERTEX_SHADER, "vertex.glsl");
 		
 		#ifndef STANDALONE_PLAYER
-		Poco::File pocoShaderFile("data/" + src + ".glsl");
+		Poco::File pocoShaderFile("data/project/" + src + ".glsl");
 		lastTimestamp = pocoShaderFile.getLastModified();		
 		#endif
 
-        ifstream shaderFile("data/" + src + ".glsl");
+        ifstream shaderFile("data/project/" + src + ".glsl");
         stringstream shaderSource;
 
         if (shaderFile) {
@@ -197,7 +197,7 @@ class Clip {
     int update(int x, int y) {
 		// Reload shader if shader file has been modified
 		// TODO: Use Poco::DirectoryWatcher when they fix the thread crashing
-		Poco::File shaderFile("data/" + src + ".glsl");
+		Poco::File shaderFile("data/project/" + src + ".glsl");
 		Poco::Timestamp timestamp = shaderFile.getLastModified();
 		if (timestamp != lastTimestamp) {
 			lastTimestamp = timestamp;

@@ -15,7 +15,7 @@ Makefile
 
 
 obj/
-bin/data/
+bin/data/project/
 
 buildLog
 runLog
