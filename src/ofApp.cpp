@@ -154,7 +154,7 @@ void ofApp::newClip() {
 	string iChannelSrc[] = {"sound", "", "", ""};
 	string iChannelFilter[] = {"", "", "", ""};
 
-	Clip *newClip = new Clip(newClipName, start, 100, 0.0, iChannelSrc, iChannelFilter, palanquinRegular);
+	Clip *newClip = new Clip(newClipName, start, 300, 0.0, iChannelSrc, iChannelFilter, palanquinRegular);
 
 	last->right = newClip;
 	newClip->left = last;
@@ -241,6 +241,14 @@ void ofApp::update() {
 
     if (isMovingMarker) {
         timelineMarker = x;
+
+		if (timelineMarker < 0) {
+			timelineMarker = 0;
+		}
+		else if (timelineMarker > last->start + last->length) {
+			timelineMarker = last->start + last->length;
+		}
+
         player.setPositionMS((int) ((timelineMarker / FPS) * 1000));
     }
 	#endif
