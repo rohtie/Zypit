@@ -55,6 +55,7 @@ class ofApp : public ofBaseApp {
 
 		#ifndef STANDALONE_PLAYER
         void saveClips();
+		void newClip();
 		#endif
 
         void update();

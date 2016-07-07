@@ -145,6 +145,22 @@ void ofApp::saveClips() {
 
     doc.save_file("data/clips.xml");
 }
+void ofApp::newClip() {
+	ofFile newFile("../newclip.glsl");
+	newFile.copyTo("newclip.glsl");
+
+	int start = last->start + last->length;
+	
+	// New clips always start with iChannel0 set to the music
+	string iChannelSrc[] = {"sound", "", "", ""};
+	string iChannelFilter[] = {"", "", "", ""};
+
+	Clip *newClip = new Clip("newclip", start, 100, 0.0, iChannelSrc, iChannelFilter, palanquinRegular);
+
+	last->right = newClip;
+	newClip->left = last;
+	last = newClip;
+}
 #endif
 
 void ofApp::update() {
@@ -507,6 +523,9 @@ void ofApp::keyPressed(int key) {
     else if (key == 's') {
         saveClips();
     }
+	else if (key == 'n') {
+		newClip();
+	}
 	#endif
 }
 
