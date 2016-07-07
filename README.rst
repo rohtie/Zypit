@@ -30,3 +30,5 @@ In the generated app directory execute the following:
     git checkout .
 
 If you're running the binary from an IDE, make sure the current working directory is set to `./bin`.
+
+If you want to try out an example project, you can clone `Zypit Tech Demo <https://github.com/rohtie/Zypit-tech-demo>`_ to the ``bin/data/project/`` directory. Like this: ``git clone git@github.com:rohtie/Zypit-tech-demo.git bin/data/project``
