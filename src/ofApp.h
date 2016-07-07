@@ -32,7 +32,9 @@ class ofApp : public ofBaseApp {
 		int  timelineMarker = 0;
 
 		#ifndef STANDALONE_PLAYER
-        bool isPreprocessing = false;
+		string newClipName = "";
+		bool isAddingNewClip = false;
+
         vector<float> fftTimeline;
 
         ofRectangle timelineMarkerRect;
@@ -44,7 +46,9 @@ class ofApp : public ofBaseApp {
 
 		#ifdef __linux__
         ofFbo exportFbo;
-        FILE *exportPipe;
+		bool isPreprocessing = false;
+
+		FILE *exportPipe;
         bool isExporting = false;
 		#endif
 		#endif

@@ -6,12 +6,11 @@
 
 /*
 
-
 TODO:
 
 Pre-Solskogen:
 	1) Create player only mode where there are no GUI elements and it auto-plays in fullscreen. [DONE]
-	2) Make it possible to add scenes without having to put them manually into the clips.xml
+	2) Make it possible to add scenes without having to put them manually into the clips.xml [DONE]
 	3) Add watcher for clip shaders, so that it is instantly refreshed when saving the shader [DONE]
 
 Post-Solskogen:
@@ -147,7 +146,7 @@ void ofApp::saveClips() {
 }
 void ofApp::newClip() {
 	ofFile newFile("../newclip.glsl");
-	newFile.copyTo("newclip.glsl");
+	newFile.copyTo(newClipName + ".glsl");
 
 	int start = last->start + last->length;
 	
@@ -155,7 +154,7 @@ void ofApp::newClip() {
 	string iChannelSrc[] = {"sound", "", "", ""};
 	string iChannelFilter[] = {"", "", "", ""};
 
-	Clip *newClip = new Clip("newclip", start, 100, 0.0, iChannelSrc, iChannelFilter, palanquinRegular);
+	Clip *newClip = new Clip(newClipName, start, 100, 0.0, iChannelSrc, iChannelFilter, palanquinRegular);
 
 	last->right = newClip;
 	newClip->left = last;
@@ -409,6 +408,14 @@ void ofApp::draw() {
     }
 	#endif
 
+	if (isAddingNewClip) {
+		palanquinRegular.drawString(
+			"New clip name: " + newClipName,
+			TIMELINE_FONT_SIZE * 8,
+			ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+		);
+	}
+
     // Visualize spectrum
     for (int i = 0; i < SPECTRUM_WIDTH; i++) {
         float magnitude = fftSmoothed[i] * INFOBAR_HEIGHT;
@@ -466,6 +473,24 @@ void ofApp::exportFrame() {
 
 void ofApp::keyPressed(int key) {
 	#ifndef STANDALONE_PLAYER
+	if (isAddingNewClip) {
+		// Remove last character when using backspace
+		if (key == OF_KEY_BACKSPACE && newClipName.size() > 0) {
+			newClipName.pop_back();
+		}
+		// Return key finishes writing the clip name
+		else if (key == OF_KEY_RETURN) {
+			newClip();
+			isAddingNewClip = false;
+		}
+		// Only accept ASCII alphanumeric keys
+		else if (key > -1 && key < 256 && (isalpha(key) || key == ' ')) {
+			newClipName += key;
+		}
+
+		return;
+	}
+
     if (key == ' ') {
 		#ifdef __linux__
         if (isPreprocessing || isExporting) {
@@ -524,7 +549,7 @@ void ofApp::keyPressed(int key) {
         saveClips();
     }
 	else if (key == 'n') {
-		newClip();
+		isAddingNewClip = true;
 	}
 	#endif
 }
