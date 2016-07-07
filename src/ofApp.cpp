@@ -534,6 +534,7 @@ void ofApp::keyPressed(int key) {
         player.play();
     }
 	#endif
+	// Change timing of clip
     else if (key == 't') {
         // Assume that the current playing clip is the one we want to change.
         isChangingClipTime = !isChangingClipTime;
@@ -548,8 +549,38 @@ void ofApp::keyPressed(int key) {
     else if (key == 's') {
         saveClips();
     }
+	// Create new clip
 	else if (key == 'n') {
 		isAddingNewClip = true;
+	}
+	// Delete clip
+	else if (key == 'x' && playing != defaultClip) {
+		// There has to be at least one clip left
+		if (playing->left == NULL && playing->right == NULL) {
+			return;
+		}
+
+		if (playing == first) {
+			Clip *newFirstClip = playing->right;
+			newFirstClip->left = NULL;
+
+			first = newFirstClip;
+		}
+		else if (playing == last) {
+			Clip *newLastClip = playing->left;
+			newLastClip->right = NULL;
+
+			last = newLastClip;
+		}
+		else {
+			Clip *left = playing->left;
+			Clip *right = playing->right;
+
+			left->right = right;
+			right->left = left;
+
+			playing = left;
+		}
 	}
 	#endif
 }
