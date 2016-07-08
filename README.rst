@@ -2,7 +2,10 @@ Zypit
 ====
 Demo tool for fragment shaders.
 
-Features:
+.. image:: http://i.imgur.com/x1gSepQ.png
+
+Features
+--------
 
 * Simple video-like editor with a single track
 * Shadertoy shaders can be plugged in directly
@@ -12,7 +15,20 @@ Features:
 * Stripped down player for release of demo
 * Export demo to mp4 video in any resolution (Linux only)
 
-.. image:: http://i.imgur.com/x1gSepQ.png
+Usage
+-----
+
+======  ========
+Hotkey  Function
+======  ========
+Space   Play project.
+N       Create new clip. If you give it the same name as a shader in your project folder, it will use that shader instead of creating a     new one.
+X       Delete the clip that you are currently viewing.
+S       Save project.
+F       Toggles whether the shader view should be constrained to 16:9 aspect ratio or not.
+E       Export project to a 1920x1080 HD mp4 video file (Linux only).
+Esc     Quit.
+======  ========
 
 Setup
 -----
