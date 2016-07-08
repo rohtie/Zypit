@@ -29,6 +29,9 @@ const int INFOBAR_HEIGHT = 32;
 const int INFORBAR_ALPHA = 200;
 const int INFORBAR_DATA_COLOR = 255;
 
+const float WIDTH_TO_ASPECT_RATIO = 9.0 / 16.0;
+const float HEIGHT_TO_ASPECT_RATIO = 16.0 / 9.0;
+
 // To prevent dead frequencies from showing on the spectrum, the width is cropped
 // to 400, which will contain all the live frequencies.
 const int SPECTRUM_WIDTH = 400;

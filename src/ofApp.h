@@ -34,6 +34,7 @@ class ofApp : public ofBaseApp {
 		#ifndef STANDALONE_PLAYER
 		string newClipName = "";
 		bool isAddingNewClip = false;
+		bool keepAspectRatio = false;
 
         vector<float> fftTimeline;
 

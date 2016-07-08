@@ -358,11 +358,37 @@ void ofApp::draw() {
     if (!isPreprocessing && !isExporting) {
 	#endif
 	#endif
-        main.allocate(width, height);
-        main.begin();
-        render(width, height);
-        main.end();
-        main.draw(0, 0);
+		int x = 0;
+		int y = 0;
+
+		int shaderHeight = height;
+		int shaderWidth = width;
+
+		if (keepAspectRatio) {
+			if (shaderHeight > shaderWidth || shaderHeight * HEIGHT_TO_ASPECT_RATIO > shaderWidth) {
+				y += shaderHeight / 2;
+				shaderHeight = shaderWidth * WIDTH_TO_ASPECT_RATIO;
+				y -= shaderHeight / 2;
+			}
+			else if (shaderWidth > shaderHeight) {
+				x += shaderWidth / 2;
+				shaderWidth = shaderHeight * HEIGHT_TO_ASPECT_RATIO;
+				x -= shaderWidth / 2;
+			}
+
+			main.allocate(shaderWidth, shaderHeight);
+			main.begin();
+			render(shaderWidth, shaderHeight);
+			main.end();
+			main.draw(x, y);
+		}
+		else {
+			main.allocate(width, height);
+			main.begin();
+			render(width, height);
+			main.end();
+			main.draw(0, 0);
+		}
 	#ifndef STANDALONE_PLAYER
 	#ifdef __linux__
 	}
@@ -578,6 +604,10 @@ void ofApp::keyPressed(int key) {
 	// Create new clip
 	else if (key == 'n') {
 		isAddingNewClip = true;
+	}
+	// Create new clip
+	else if (key == 'f') {
+		keepAspectRatio = !keepAspectRatio;
 	}
 	// Delete clip
 	else if (key == 'x') {
