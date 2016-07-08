@@ -62,7 +62,7 @@ class Clip {
                 else {
                     // TODO: Support grayscale images so that the image passed
                     // to the shader does not just fill the red channel.
-                    ofLoadImage(iChannel[i], iChannelSrc[i]);
+                    ofLoadImage(iChannel[i], "project/" + iChannelSrc[i]);
                     iChannel[i].setTextureWrap(GL_REPEAT, GL_REPEAT);
 
                     if (iChannelFilter[i] == "nearest") {

@@ -215,7 +215,7 @@ void ofApp::update() {
     }
 	#endif
 
-    fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 2, GL_LUMINANCE);
+	fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 2, GL_RED);
 
 	Clip *current = first;
 
