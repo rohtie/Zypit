@@ -536,7 +536,7 @@ void ofApp::keyPressed(int key) {
 			isAddingNewClip = false;
 		}
 		// Only accept ASCII alphanumeric keys
-		else if (key > -1 && key < 256 && (isalpha(key) || key == ' ')) {
+		else if (key > -1 && key < 256 && (isalpha(key) || key == ' ' || key == '-' || key == '_')) {
 			newClipName += key;
 		}
 
