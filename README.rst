@@ -2,7 +2,7 @@ Zypit
 ====
 Demo tool for fragment shaders.
 
-.. image:: http://i.imgur.com/x1gSepQ.png
+.. image:: http://i.imgur.com/9C8ycBV.png
 
 Features
 --------
