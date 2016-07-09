@@ -275,7 +275,17 @@ void ofApp::update() {
     if (isPlaying) {
 		timelineMarker = (player.getPositionMS() / 1000.0) * FPS;
 
-        if (timelineMarker > last->start + last->length) {
+		#ifndef STANDALONE_PLAYER
+		if (loopCurrentClip) {
+			if (timelineMarker > loopingClip->start + loopingClip->length) {
+				timelineMarker = loopingClip->start;
+				player.setPositionMS((int)((timelineMarker / FPS) * 1000));
+			}
+		}
+        else if (timelineMarker > last->start + last->length) {
+		#else	
+		if (timelineMarker > last->start + last->length) {
+		#endif
 			#ifndef STANDALONE_PLAYER
             // We have reached the end of the timeline
             timelineMarker = 0;
@@ -357,7 +367,6 @@ void ofApp::draw() {
 	#ifdef __linux__
     if (!isPreprocessing && !isExporting) {
 	#endif
-	#endif
 		int x = 0;
 		int y = 0;
 
@@ -383,13 +392,14 @@ void ofApp::draw() {
 			main.draw(x, y);
 		}
 		else {
+	#endif
 			main.allocate(width, height);
 			main.begin();
 			render(width, height);
 			main.end();
 			main.draw(0, 0);
-		}
 	#ifndef STANDALONE_PLAYER
+		}
 	#ifdef __linux__
 	}
 		
@@ -608,6 +618,11 @@ void ofApp::keyPressed(int key) {
 	// Create new clip
 	else if (key == 'f') {
 		keepAspectRatio = !keepAspectRatio;
+	}
+	// Loop current clip
+	else if (key == 'l') {
+		loopCurrentClip = !loopCurrentClip;
+		loopingClip = playing;
 	}
 	// Delete clip
 	else if (key == 'x') {

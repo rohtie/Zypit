@@ -35,6 +35,8 @@ class ofApp : public ofBaseApp {
 		string newClipName = "";
 		bool isAddingNewClip = false;
 		bool keepAspectRatio = true;
+		bool loopCurrentClip = false;
+		Clip *loopingClip = NULL;
 
         vector<float> fftTimeline;
 
