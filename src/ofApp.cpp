@@ -273,7 +273,7 @@ void ofApp::update() {
 
     // Get current playing clip
     if (isPlaying) {
-        timelineMarker += 1;
+		timelineMarker = (player.getPositionMS() / 1000.0) * FPS;
 
         if (timelineMarker > last->start + last->length) {
 			#ifndef STANDALONE_PLAYER
@@ -560,14 +560,14 @@ void ofApp::keyPressed(int key) {
         }
         else {
 		#endif
-            isPlaying = !isPlaying;
-
             if (isPlaying) {
-                player.play();
+				player.stop();
             }
             else {
-                player.stop();
+				player.play();
+				player.setPositionMS((int)((timelineMarker / FPS) * 1000));
             }
+			isPlaying = !isPlaying;
 		#ifdef __linux__
         }
 	    #endif
