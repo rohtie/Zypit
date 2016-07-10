@@ -27,6 +27,7 @@ X       Delete the clip that you are currently viewing.
 S       Save project.
 F       Toggles whether the shader view should be constrained to 16:9 aspect ratio or not.
 L       Loop current playing clip.
+M       Mute music.
 E       Export project to a 1920x1080 HD mp4 video file (Linux only).
 Esc     Quit.
 ======  ========

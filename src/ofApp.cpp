@@ -624,6 +624,15 @@ void ofApp::keyPressed(int key) {
 		loopCurrentClip = !loopCurrentClip;
 		loopingClip = playing;
 	}
+	// Mute music
+	else if (key == 'm') {
+		if (player.getVolume() == 0.0f) {
+			player.setVolume(1.0f);
+		}
+		else {
+			player.setVolume(0.0f);
+		}
+	}
 	// Delete clip
 	else if (key == 'x') {
 		// There has to be at least one clip left
