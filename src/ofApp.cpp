@@ -273,7 +273,20 @@ void ofApp::update() {
 
     // Get current playing clip
     if (isPlaying) {
-		timelineMarker = (player.getPositionMS() / 1000.0) * FPS;
+        #ifndef STANDALONE_PLAYER
+        #ifdef __linux__
+        if (isPreprocessing || isExporting) {
+            timelineMarker += 1;
+        }
+        else {
+        #endif
+        #endif
+		  timelineMarker = (player.getPositionMS() / 1000.0) * FPS;
+        #ifndef STANDALONE_PLAYER
+        #ifdef __linux__
+        }
+        #endif
+        #endif
 
 		#ifndef STANDALONE_PLAYER
 		if (loopCurrentClip) {
@@ -315,7 +328,7 @@ void ofApp::update() {
                     " -r " << (int) FPS << " -i -" <<
 
                     // Set audio input source to mp3 file at FPS rate
-                    " -r " << (int) FPS << " -i data/song.mp3" <<
+                    " -r " << (int) FPS << " -i data/project/song.mp3" <<
 
                     // Set input image type to png and output video to x264
                     " -vcodec png -c:v libx264" <<
