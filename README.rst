@@ -29,6 +29,7 @@ F       Toggles whether the shader view should be constrained to 16:9 aspect rat
 L       Loop current playing clip.
 M       Mute music.
 E       Export project to a 1920x1080 HD mp4 video file (Linux only).
+F12     Take a screenshot with 3840x2160 4K resolution.
 Esc     Quit.
 ======  ========
 

@@ -23,7 +23,7 @@ Post-Solskogen:
 void ofApp::setup() {
     ofBackground(BG_COLOR);
     ofSetFrameRate(FPS);
-	
+
 	#ifndef STANDALONE_PLAYER
     palanquinRegular.load("Palanquin-Regular.ttf", TIMELINE_FONT_SIZE);
 	#endif
@@ -99,9 +99,9 @@ void ofApp::setup() {
 		first = defaultClip;
 		last = defaultClip;
 	}
-	
+
 	playing = first;
-	
+
 	#ifndef STANDALONE_PLAYER
     // Setup timeline
     timelineMarkerRect.x = -TIMELINE_MARKER_SIZE / 2;
@@ -118,7 +118,7 @@ void ofApp::setup() {
     for (int i = 0; i < 8192; i++){
         fftSmoothed[i] = 0;
     }
-	
+
 	#ifdef STANDALONE_PLAYER
 	// Start playing immediately when in standalone player mode
 	player.play();
@@ -199,7 +199,7 @@ void ofApp::update() {
             }
 
             fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
-			
+
 			#ifdef __linux__
             if (isPreprocessing) {
                 fftTimeline.push_back(fftSmoothed[i]);
@@ -283,14 +283,14 @@ void ofApp::update() {
 			}
 		}
         else if (timelineMarker > last->start + last->length) {
-		#else	
+		#else
 		if (timelineMarker > last->start + last->length) {
 		#endif
 			#ifndef STANDALONE_PLAYER
             // We have reached the end of the timeline
             timelineMarker = 0;
             player.setPositionMS(0);
-			#else	
+			#else
 			// Demo is finished, close it
 			std::exit(1);
 			#endif
@@ -342,7 +342,7 @@ void ofApp::update() {
 			#endif
         }
     }
-	
+
 	#ifndef STANDALONE_PLAYER
     timelineMarkerRect.x = timelineMarker - TIMELINE_MARKER_SIZE / 2;
 	#endif
@@ -402,7 +402,7 @@ void ofApp::draw() {
 		}
 	#ifdef __linux__
 	}
-		
+
     // Export
     exportFrame();
 	#endif
@@ -511,6 +511,22 @@ void ofApp::render(int width, int height) {
 }
 
 #ifndef STANDALONE_PLAYER
+void ofApp::screenshot() {
+    ofFbo screenshot;
+    screenshot.allocate(SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT);
+
+    screenshot.begin();
+        render(SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT);
+    screenshot.end();
+
+    ofPixels pixels;
+    screenshot.readToPixels(pixels);
+
+    ofImage image;
+    image.setFromPixels(pixels);
+    image.save("screenshot.png");
+}
+
 #ifdef __linux__
 void ofApp::exportFrame() {
     if (isExporting && isPlaying) {
@@ -633,6 +649,10 @@ void ofApp::keyPressed(int key) {
 			player.setVolume(0.0f);
 		}
 	}
+    // Screenshot
+    else if (key == OF_KEY_F12) {
+        screenshot();
+    }
 	// Delete clip
 	else if (key == 'x') {
 		// There has to be at least one clip left
@@ -702,7 +722,7 @@ void ofApp::mousePressed(int x, int y, int button) {
         current->inside(x, y);
         current = current->right;
     }
-	#endif	
+	#endif
 }
 
 void ofApp::mouseReleased(int x, int y, int button) {

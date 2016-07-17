@@ -68,8 +68,9 @@ class ofApp : public ofBaseApp {
         void update();
         void draw();
         void render(int width, int height);
-		
+
 		#ifndef STANDALONE_PLAYER
+        void screenshot();
 		#ifdef __linux__
         void exportFrame();
 		#endif
