@@ -4,21 +4,6 @@
 #include "constants.h"
 #include "clip.h"
 
-/*
-
-TODO:
-
-Pre-Solskogen:
-	1) Create player only mode where there are no GUI elements and it auto-plays in fullscreen. [DONE]
-	2) Make it possible to add scenes without having to put them manually into the clips.xml [DONE]
-	3) Add watcher for clip shaders, so that it is instantly refreshed when saving the shader [DONE]
-
-Post-Solskogen:
-	1) Port export functionality, so that it can be used with windows
-	2) Export in 1080p and upload to vimeo
-
-
-*/
 
 void ofApp::setup() {
     ofBackground(BG_COLOR);
@@ -184,9 +169,11 @@ void ofApp::update() {
     // Load spectrum analysis into texture
     // TODO: Implement this in the same way as done in the web audio API
     //       for getFloatFrequencyData: https://webaudio.github.io/web-audio-api/#fft-windowing-and-smoothing-over-time
-	#ifdef __linux__
+    #ifndef STANDALONE_PLAYER
+    #ifdef __linux__
     if (!isExporting) {
 	#endif
+    #endif
         float * val = ofSoundGetSpectrum(512);
         for (int i = 0; i < SPECTRUM_WIDTH; i++){
             // Let signal dimminish over time to make the visual more pronounced
@@ -200,12 +187,15 @@ void ofApp::update() {
 
             fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
 
+            #ifndef STANDALONE_PLAYER
 			#ifdef __linux__
             if (isPreprocessing) {
                 fftTimeline.push_back(fftSmoothed[i]);
             }
 			#endif
+            #endif
         }
+    #ifndef STANDALONE_PLAYER
 	#ifdef __linux__
     } else if (isExporting) {
         for (int i=0; i<SPECTRUM_WIDTH; i++) {
@@ -214,6 +204,7 @@ void ofApp::update() {
         }
     }
 	#endif
+    #endif
 
 	fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 2, GL_RED);
 
@@ -308,6 +299,7 @@ void ofApp::update() {
 			std::exit(1);
 			#endif
 
+            #ifndef STANDALONE_PLAYER
 			#ifdef __linux__
             if (isPreprocessing) {
                 isPreprocessing = false;
@@ -353,6 +345,7 @@ void ofApp::update() {
                 player.stop();
             }
 			#endif
+            #endif
         }
     }
 
