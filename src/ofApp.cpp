@@ -659,6 +659,11 @@ void ofApp::keyPressed(int key) {
     else if (key == OF_KEY_F12) {
         screenshot();
     }
+    // Toggle fullscreen
+    else if (key == OF_KEY_F11) {
+        isFullscreen = !isFullscreen;
+        ofSetFullscreen(isFullscreen);
+    }
 	// Delete clip
 	else if (key == 'x') {
 		// There has to be at least one clip left
