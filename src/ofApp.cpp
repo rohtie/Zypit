@@ -505,8 +505,12 @@ void ofApp::draw() {
 void ofApp::render(int width, int height) {
     ofSetColor(255);
 
+    float currentTime = timelineMarker / FPS;
+    float startTime = playing->start / FPS;
+    float requestTime = playing->time;
+
     playing->shader.begin();
-        playing->shader.setUniform1f("iGlobalTime", timelineMarker / FPS - playing->time);
+        playing->shader.setUniform1f("iGlobalTime", currentTime - (startTime - requestTime));
         playing->shader.setUniform2f("iResolution", width, height);
 
         for (int i=0; i<4; i++) {
@@ -719,7 +723,7 @@ void ofApp::mouseMoved(int x, int y) {
             return;
         }
 
-        playing->time = orgTime + (changingClipTimeBase - x) / FPS;
+        playing->time = orgTime - (changingClipTimeBase - x) / FPS;
     }
 	#endif
 }
