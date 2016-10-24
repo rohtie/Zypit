@@ -19,3 +19,12 @@ bin/data/project/
 
 buildLog
 runLog
+
+*.mp4
+*.png
+
+bin/Zypit
+bin/Zypit_debug
+bin/data/.gitkeep
+bin/libs/
+
