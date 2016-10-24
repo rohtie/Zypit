@@ -366,7 +366,11 @@ void ofApp::update() {
 
 void ofApp::draw() {
     int width = ofGetWidth();
-    int height = ofGetHeight() - TIMELINE_HEIGHT;
+    int height = ofGetHeight();
+
+    if (showUI) {
+        height -= TIMELINE_HEIGHT;
+    }
 
     // MAIN SCREEN
 	#ifndef STANDALONE_PLAYER
@@ -413,87 +417,89 @@ void ofApp::draw() {
     exportFrame();
 	#endif
 
-    // TIMELINE
-    timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
-    timeline.begin();
-        ofBackground(TIMELINE_BG_COLOR);
+    if (showUI) {
+        // TIMELINE
+        timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
+        timeline.begin();
+            ofBackground(TIMELINE_BG_COLOR);
 
-        Clip *current = first;
-        while (current != NULL) {
-            current->draw();
-            current = current->right;
-        }
+            Clip *current = first;
+            while (current != NULL) {
+                current->draw();
+                current = current->right;
+            }
 
-        ofSetColor(255, 0, 0);
-        ofDrawLine(timelineMarker, 0, timelineMarker, TIMELINE_HEIGHT);
-        ofDrawRectangle(timelineMarkerRect);
+            ofSetColor(255, 0, 0);
+            ofDrawLine(timelineMarker, 0, timelineMarker, TIMELINE_HEIGHT);
+            ofDrawRectangle(timelineMarkerRect);
 
-    timeline.end();
-    timeline.draw(-timelinePos, height);
+        timeline.end();
+        timeline.draw(-timelinePos, height);
 
-    // Transparent black box so that white text can be visible at all times
-    ofSetColor(0, 0, 0, INFORBAR_ALPHA);
-    ofDrawRectangle(
-        0, ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT,
-        ofGetWidth(), INFOBAR_HEIGHT
-    );
-
-    ofSetColor(INFORBAR_DATA_COLOR);
-
-    // Draw FPS
-    std::stringstream fps;
-    fps << round(ofGetFrameRate());
-    palanquinRegular.drawString(
-        fps.str(),
-        TIMELINE_FONT_SIZE,
-        height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
-    );
-
-    std::stringstream time;
-    time << roundf((timelineMarker / FPS) * 100.0) / 100.0;
-    palanquinRegular.drawString(
-        time.str(),
-        TIMELINE_FONT_SIZE * 3,
-        height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
-    );
-
-	#ifdef __linux__
-    if (isPlaying) {
-        if (isPreprocessing) {
-            palanquinRegular.drawString(
-                "Baking FFT...",
-                TIMELINE_FONT_SIZE * 8,
-                ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
-            );
-        }
-        else if (isExporting) {
-            palanquinRegular.drawString(
-                "Rendering...",
-                TIMELINE_FONT_SIZE * 8,
-                ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
-            );
-        }
-    }
-	#endif
-
-	if (isAddingNewClip) {
-		palanquinRegular.drawString(
-			"New clip name: " + newClipName,
-			TIMELINE_FONT_SIZE * 8,
-			ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
-		);
-	}
-
-    // Visualize spectrum
-    for (int i = 0; i < SPECTRUM_WIDTH; i++) {
-        float magnitude = fftSmoothed[i] * INFOBAR_HEIGHT;
-
+        // Transparent black box so that white text can be visible at all times
+        ofSetColor(0, 0, 0, INFORBAR_ALPHA);
         ofDrawRectangle(
-            ofGetWidth() - SPECTRUM_WIDTH + i,
-            ofGetHeight() - TIMELINE_HEIGHT - 1 - magnitude,
-            1, magnitude);
+            0, ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT,
+            ofGetWidth(), INFOBAR_HEIGHT
+        );
+
+        ofSetColor(INFORBAR_DATA_COLOR);
+
+        // Draw FPS
+        std::stringstream fps;
+        fps << round(ofGetFrameRate());
+        palanquinRegular.drawString(
+            fps.str(),
+            TIMELINE_FONT_SIZE,
+            height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+        );
+
+        std::stringstream time;
+        time << roundf((timelineMarker / FPS) * 100.0) / 100.0;
+        palanquinRegular.drawString(
+            time.str(),
+            TIMELINE_FONT_SIZE * 3,
+            height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+        );
+
+    	#ifdef __linux__
+        if (isPlaying) {
+            if (isPreprocessing) {
+                palanquinRegular.drawString(
+                    "Baking FFT...",
+                    TIMELINE_FONT_SIZE * 8,
+                    ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+                );
+            }
+            else if (isExporting) {
+                palanquinRegular.drawString(
+                    "Rendering...",
+                    TIMELINE_FONT_SIZE * 8,
+                    ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+                );
+            }
+        }
+    	#endif
+
+    	if (isAddingNewClip) {
+    		palanquinRegular.drawString(
+    			"New clip name: " + newClipName,
+    			TIMELINE_FONT_SIZE * 8,
+    			ofGetHeight() - TIMELINE_HEIGHT - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
+    		);
+    	}
+
+        // Visualize spectrum
+        for (int i = 0; i < SPECTRUM_WIDTH; i++) {
+            float magnitude = fftSmoothed[i] * INFOBAR_HEIGHT;
+
+            ofDrawRectangle(
+                ofGetWidth() - SPECTRUM_WIDTH + i,
+                ofGetHeight() - TIMELINE_HEIGHT - 1 - magnitude,
+                1, magnitude);
+        }
+    	#endif
     }
-	#endif
 }
 
 void ofApp::render(int width, int height) {
@@ -655,14 +661,18 @@ void ofApp::keyPressed(int key) {
 			player.setVolume(0.0f);
 		}
 	}
-    // Screenshot
-    else if (key == OF_KEY_F12) {
-        screenshot();
+    // Toggle UI
+    else if (key == OF_KEY_F10) {
+        showUI = !showUI;
     }
     // Toggle fullscreen
     else if (key == OF_KEY_F11) {
         isFullscreen = !isFullscreen;
         ofSetFullscreen(isFullscreen);
+    }
+    // Screenshot
+    else if (key == OF_KEY_F12) {
+        screenshot();
     }
 	// Delete clip
 	else if (key == 'x') {

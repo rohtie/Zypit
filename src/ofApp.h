@@ -57,6 +57,8 @@ class ofApp : public ofBaseApp {
 		#endif
 
         bool isFullscreen = false;
+        bool showUI = true;
+
 
         ofFbo main;
 
