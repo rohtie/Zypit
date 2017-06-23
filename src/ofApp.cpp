@@ -410,6 +410,7 @@ void ofApp::draw() {
 			main.draw(0, 0);
 	#ifndef STANDALONE_PLAYER
 		}
+	#endif
 	#ifdef __linux__
 	}
 
@@ -417,6 +418,7 @@ void ofApp::draw() {
     exportFrame();
 	#endif
 
+	#ifndef STANDALONE_PLAYER
     if (showUI) {
         // TIMELINE
         timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
@@ -498,8 +500,8 @@ void ofApp::draw() {
                 ofGetHeight() - TIMELINE_HEIGHT - 1 - magnitude,
                 1, magnitude);
         }
-    	#endif
     }
+	#endif
 }
 
 void ofApp::render(int width, int height) {
