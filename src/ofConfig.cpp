@@ -108,25 +108,27 @@ void ofConfig::mousePressed(int x, int y, int button) {
     for (int i = 0; i < resolutionRects.size(); i++) {
         if (resolutionRects[i]->inside(x, y)) {
             selectedResolution = i;
+
+			settings->width = resolutions[selectedResolution].first;
+			settings->height = resolutions[selectedResolution].second;
         }
     }
 
     // Toggle fullscreen button if mouse is within rectangle
     if (fullscreenRect.inside(x, y)) {
         isFullscreen = !isFullscreen;
-    }
 
-    // Run demo if mouse is within rectangle
-    // Saves the settings and exits
-    if (runDemoRect.inside(x, y)) {
         if (isFullscreen) {
             settings->windowMode = OF_FULLSCREEN;
         }
+        else {
+            settings->windowMode = OF_WINDOW;
+        }
+    }
 
-        settings->width = resolutions[selectedResolution].first;
-        settings->height = resolutions[selectedResolution].second;
-
-        ofExit();
+    if (runDemoRect.inside(x, y)) {
+		// TODO: figure out how to exit this window without 
+		//       fucking up the openframeworks context
     }
 }
 
