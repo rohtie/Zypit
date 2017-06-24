@@ -91,6 +91,9 @@ void ofConfig::draw() {
         ofGetWidth() * 0.5 - (RESOLUTION_FONT_SIZE * 0.75 * s.length()) * 0.5,
         fullscreenRect.y + RESOLUTION_FONT_SIZE + RESOLUTION_MARGIN / 2);
 
+	/*
+	TODO: Figure out how to close the window without segfaulting
+
     ofSetColor(50);
     ofDrawRectangle(runDemoRect);
 
@@ -100,6 +103,7 @@ void ofConfig::draw() {
         s,
         runDemoRect.x + runDemoRect.width * 0.5 - (RESOLUTION_FONT_SIZE * 0.75 * s.length()) * 0.5,
         runDemoRect.y + RESOLUTION_FONT_SIZE + RESOLUTION_MARGIN / 2);
+    */
 
 }
 
@@ -127,7 +131,7 @@ void ofConfig::mousePressed(int x, int y, int button) {
     }
 
     if (runDemoRect.inside(x, y)) {
-		// TODO: figure out how to exit this window without 
+		// TODO: figure out how to exit this window without
 		//       fucking up the openframeworks context
     }
 }
