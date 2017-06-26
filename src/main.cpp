@@ -16,12 +16,12 @@ int main( ){
 	ofRunApp(new ofConfig(&demoSettings));
 
 	ofCreateWindow(demoSettings);
-	ofRunApp(new ofApp());
+	ofRunApp(new ofApp(demoSettings.width, demoSettings.height));
 	#else
 	ofGLWindowSettings settings;
 	settings.setGLVersion(3, 2);
 	ofCreateWindow(settings);
-	ofRunApp(new ofApp());
+	ofRunApp(new ofApp(0, 0));
 	#endif
 
 }

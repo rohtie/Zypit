@@ -4,6 +4,10 @@
 #include "constants.h"
 #include "clip.h"
 
+ofApp::ofApp(int _width, int _height) {
+    demoWidth = _width;
+	demoHeight = _height;
+}
 
 void ofApp::setup() {
     ofBackground(BG_COLOR);
@@ -403,11 +407,19 @@ void ofApp::draw() {
 		}
 		else {
 	#endif
-			main.allocate(width, height);
-			main.begin();
-			render(width, height);
-			main.end();
+            #ifndef STANDALONE_PLAYER
+            main.allocate(width, height);
+            main.begin();
+            render(width, height);
+            main.end();
 			main.draw(0, 0);
+            #else
+            main.allocate(demoWidth, demoHeight);
+            main.begin();
+            render(demoWidth, demoHeight);
+            main.end();
+            main.draw(0, 0, width, height);
+            #endif
 	#ifndef STANDALONE_PLAYER
 		}
 	#endif

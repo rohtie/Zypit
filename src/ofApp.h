@@ -20,6 +20,9 @@ class ofApp : public ofBaseApp {
         Clip *playing;
         Clip *defaultClip;
 
+        int demoWidth;
+        int demoHeight;
+
         ofSoundPlayer player;
         ofTexture fftTexture;
 		float* fftSmoothed;
@@ -62,7 +65,9 @@ class ofApp : public ofBaseApp {
 
         ofFbo main;
 
-        void setup();
+		ofApp(int _width, int _height);
+
+		void setup();
 
 		#ifndef STANDALONE_PLAYER
         void saveClips();
