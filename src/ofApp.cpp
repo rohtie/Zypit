@@ -300,7 +300,7 @@ void ofApp::update() {
             player.setPositionMS(0);
 			#else
 			// Demo is finished, close it
-			std::exit(1);
+			ofExit();
 			#endif
 
             #ifndef STANDALONE_PLAYER
