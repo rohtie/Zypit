@@ -7,7 +7,7 @@ int main( ){
 	#ifdef STANDALONE_PLAYER
 	ofWindowSettings settings;
 	settings.width = 300;
-	settings.height = 400;
+	settings.height = 315;
 	ofCreateWindow(settings);
 
 	ofGLWindowSettings demoSettings;

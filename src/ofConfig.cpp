@@ -57,7 +57,7 @@ void ofConfig::draw() {
     // Resolution choices
     for (int i = 0; i < resolutions.size(); i++) {
         if (i == selectedResolution) {
-            ofSetColor(75);
+			ofSetColor(71, 43, 208);
         }
         else {
             ofSetColor(50);
@@ -77,7 +77,7 @@ void ofConfig::draw() {
 
     // Fullscreen button
     if (isFullscreen) {
-        ofSetColor(75);
+		ofSetColor(71, 43, 208);
     }
     else {
         ofSetColor(50);
