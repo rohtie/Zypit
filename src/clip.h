@@ -21,7 +21,7 @@ class Clip {
         Clip *right = NULL;
 
         ofRectangle rect;
-		
+
         bool isSelected = false;
         int selectedPos = 0;
 
@@ -50,7 +50,22 @@ class Clip {
         start = _start;
         length = _length;
 
-        // Setup texture channels
+        setupTextureChannels(_iChannelSrc, _iChannelFilter);
+
+        time = _time;
+
+		rect.height = TIMELINE_CLIP_HEIGHT;
+        rect.y = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
+
+		#ifndef STANDALONE_PLAYER
+		font = _font;
+        reconstruct();
+		#endif
+
+        setupShader();
+    }
+
+    void setupTextureChannels(string* _iChannelSrc, string* _iChannelFilter) {
         for (int i=0; i<4; i++) {
             iChannelSrc[i] = _iChannelSrc[i];
             iChannelFilter[i] = _iChannelFilter[i];
@@ -80,26 +95,14 @@ class Clip {
                 }
             }
         }
-
-        time = _time;
-
-		rect.height = TIMELINE_CLIP_HEIGHT;
-        rect.y = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
-
-		#ifndef STANDALONE_PLAYER
-		font = _font;
-        reconstruct();
-		#endif
-
-        setupShader();
     }
 
     void setupShader() {
         shader.setupShaderFromFile(GL_VERTEX_SHADER, "vertex.glsl");
-		
+
 		#ifndef STANDALONE_PLAYER
 		Poco::File pocoShaderFile("data/project/" + src + ".glsl");
-		lastTimestamp = pocoShaderFile.getLastModified();		
+		lastTimestamp = pocoShaderFile.getLastModified();
 		#endif
 
         ifstream shaderFile("data/project/" + src + ".glsl");
