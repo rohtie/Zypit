@@ -3,15 +3,11 @@
 #include "ofMain.h"
 #include "constants.h"
 
-#include "Poco/Timestamp.h"
-#include "Poco/File.h"
+#include "shader.h"
 
 
-class Clip {
+class Clip : public Shader {
     public:
-        string src;
-        ofShader shader;
-
         float time = 0.0;
 
         int start;
@@ -30,30 +26,18 @@ class Clip {
         int orgStart = 0;
         int orgLength = 0;
 
-        ofTexture iChannel[4];
-        string iChannelSrc[4];
-        string iChannelFilter[4];
-
-        int soundChannel = -1;
-
 		#ifndef STANDALONE_PLAYER
 		ofTrueTypeFont font;
-		Poco::Timestamp lastTimestamp;
 		#endif
 
 	#ifndef STANDALONE_PLAYER
-    Clip(string _src, int _start, int _length, float _time, string* _iChannelSrc, string* _iChannelFilter, ofTrueTypeFont &_font) {
+    Clip(string _src, int _start, int _length, float _time, string* _iChannelSrc, string* _iChannelFilter, ofTrueTypeFont &_font) : Shader(_src, _iChannelSrc, _iChannelFilter) {
 	#else
-	Clip(string _src, int _start, int _length, float _time, string* _iChannelSrc, string* _iChannelFilter) {
+	Clip(string _src, int _start, int _length, float _time, string* _iChannelSrc, string* _iChannelFilter) : Shader(_src, _iChannelSrc, _iChannelFilter) {
 	#endif
-        src = _src;
         start = _start;
         length = _length;
-
-        setupTextureChannels(_iChannelSrc, _iChannelFilter);
-
         time = _time;
-
 		rect.height = TIMELINE_CLIP_HEIGHT;
         rect.y = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 
@@ -61,72 +45,9 @@ class Clip {
 		font = _font;
         reconstruct();
 		#endif
-
-        setupShader();
-    }
-
-    void setupTextureChannels(string* _iChannelSrc, string* _iChannelFilter) {
-        for (int i=0; i<4; i++) {
-            iChannelSrc[i] = _iChannelSrc[i];
-            iChannelFilter[i] = _iChannelFilter[i];
-
-            if (!iChannelSrc[i].empty()) {
-                if (iChannelSrc[i] == "sound") {
-                    soundChannel = i;
-                }
-                else {
-                    // TODO: Support grayscale images so that the image passed
-                    // to the shader does not just fill the red channel.
-                    ofLoadImage(iChannel[i], "project/" + iChannelSrc[i]);
-                    iChannel[i].setTextureWrap(GL_REPEAT, GL_REPEAT);
-
-                    if (iChannelFilter[i] == "nearest") {
-                        iChannel[i].setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
-                    }
-                    else if (iChannelFilter[i] == "linear") {
-                        iChannel[i].setTextureMinMagFilter(GL_LINEAR, GL_LINEAR);
-                    }
-                    // Assume that we always want mipmap if not specified otherwise
-                    else {
-                        iChannel[i].enableMipmap();
-                        iChannel[i].generateMipmap();
-                        iChannel[i].setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
-                    }
-                }
-            }
-        }
-    }
-
-    void setupShader() {
-        shader.setupShaderFromFile(GL_VERTEX_SHADER, "vertex.glsl");
-
-		#ifndef STANDALONE_PLAYER
-		Poco::File pocoShaderFile("data/project/" + src + ".glsl");
-		lastTimestamp = pocoShaderFile.getLastModified();
-		#endif
-
-        ifstream shaderFile("data/project/" + src + ".glsl");
-        stringstream shaderSource;
-
-        if (shaderFile) {
-            shaderSource
-                << SHADER_HEADER
-                << shaderFile.rdbuf()
-                << SHADER_FOOTER;
-
-            shaderFile.close();
-        }
-
-        shader.setupShaderFromSource(GL_FRAGMENT_SHADER, shaderSource.str());
-        shader.bindDefaults();
-        shader.linkProgram();
     }
 
 	#ifndef STANDALONE_PLAYER
-    void reloadShader() {
-        setupShader();
-    }
-
     void reconstruct() {
         rect.x = start;
         rect.width = length;
@@ -198,14 +119,7 @@ class Clip {
     }
 
     int update(int x, int y) {
-		// Reload shader if shader file has been modified
-		// TODO: Use Poco::DirectoryWatcher when they fix the thread crashing
-		Poco::File shaderFile("data/project/" + src + ".glsl");
-		Poco::Timestamp timestamp = shaderFile.getLastModified();
-		if (timestamp != lastTimestamp) {
-			lastTimestamp = timestamp;
-			reloadShader();
-		}
+        Shader::update();
 
         if (isSelected) {
             start = x - selectedPos;
