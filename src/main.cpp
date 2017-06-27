@@ -11,6 +11,8 @@ int main( ){
 	ofCreateWindow(settings);
 
 	ofGLWindowSettings demoSettings;
+	demoSettings.width = 1920;
+	demoSettings.height = 1080;
 	demoSettings.setGLVersion(3, 2);
 	demoSettings.windowMode = OF_FULLSCREEN;
 	ofRunApp(new ofConfig(&demoSettings));
