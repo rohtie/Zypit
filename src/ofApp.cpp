@@ -292,7 +292,7 @@ void ofApp::update() {
 		}
         else if (timelineMarker > last->start + last->length) {
 		#else
-		if (timelineMarker > last->start + last->length) {
+		if (timelineMarker > last->start + last->length || !player.isPlaying()) {
 		#endif
 			#ifndef STANDALONE_PLAYER
             // We have reached the end of the timeline
