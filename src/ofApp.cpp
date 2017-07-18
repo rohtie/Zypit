@@ -97,10 +97,8 @@ void ofApp::setup() {
     timelineMarkerRect.width = TIMELINE_MARKER_SIZE;
     timelineMarkerRect.height = TIMELINE_HEIGHT - TIMELINE_CLIP_HEIGHT;
 
-	#ifdef __linux__
     // Setup video export
     exportFbo.allocate(1920, 1080);
-	#endif
 	#endif
 
     fftSmoothed = new float[8192];
@@ -174,9 +172,7 @@ void ofApp::update() {
     // TODO: Implement this in the same way as done in the web audio API
     //       for getFloatFrequencyData: https://webaudio.github.io/web-audio-api/#fft-windowing-and-smoothing-over-time
     #ifndef STANDALONE_PLAYER
-    #ifdef __linux__
     if (!isExporting) {
-	#endif
     #endif
         float * val = ofSoundGetSpectrum(512);
         for (int i = 0; i < SPECTRUM_WIDTH; i++){
@@ -192,22 +188,18 @@ void ofApp::update() {
             fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
 
             #ifndef STANDALONE_PLAYER
-			#ifdef __linux__
             if (isPreprocessing) {
                 fftTimeline.push_back(fftSmoothed[i]);
             }
-			#endif
             #endif
         }
     #ifndef STANDALONE_PLAYER
-	#ifdef __linux__
     } else if (isExporting) {
         for (int i=0; i<SPECTRUM_WIDTH; i++) {
             fftSmoothed[i] = fftTimeline[i + timelineMarker * SPECTRUM_WIDTH];
             fftSmoothed[i + SPECTRUM_WIDTH] = fftSmoothed[i];
         }
     }
-	#endif
     #endif
 
 	fftTexture.loadData(fftSmoothed, SPECTRUM_WIDTH, 2, GL_RED);
@@ -269,18 +261,14 @@ void ofApp::update() {
     // Get current playing clip
     if (isPlaying) {
         #ifndef STANDALONE_PLAYER
-        #ifdef __linux__
         if (isPreprocessing || isExporting) {
             timelineMarker += 1;
         }
         else {
         #endif
-        #endif
 		  timelineMarker = (player.getPositionMS() / 1000.0) * FPS;
         #ifndef STANDALONE_PLAYER
-        #ifdef __linux__
         }
-        #endif
         #endif
 
 		#ifndef STANDALONE_PLAYER
@@ -304,7 +292,6 @@ void ofApp::update() {
 			#endif
 
             #ifndef STANDALONE_PLAYER
-			#ifdef __linux__
             if (isPreprocessing) {
                 isPreprocessing = false;
                 isExporting = true;
@@ -335,20 +322,19 @@ void ofApp::update() {
 
                     // Set output video at FPS rate
                     // 18 crf ensures a visually lossless quality
-                    " -r " << (int) FPS << " -crf 18 out.mp4";
+                    " -r " << (int) FPS << " -crf 18 -vn out.mp4";
 
-                exportPipe = popen(ffmpeg.str().c_str(), "w");
+                exportPipe = _popen(ffmpeg.str().c_str(), "w");
                 player.stop();
             }
             else if (isExporting) {
                 // We are done exporting
                 isExporting = false;
-                pclose(exportPipe);
+                _pclose(exportPipe);
                 fftTimeline.clear();
                 isPlaying = false;
                 player.stop();
             }
-			#endif
             #endif
         }
     }
@@ -378,9 +364,7 @@ void ofApp::draw() {
 
     // MAIN SCREEN
 	#ifndef STANDALONE_PLAYER
-	#ifdef __linux__
     if (!isPreprocessing && !isExporting) {
-	#endif
 		int x = 0;
 		int y = 0;
 
@@ -423,12 +407,10 @@ void ofApp::draw() {
 	#ifndef STANDALONE_PLAYER
 		}
 	#endif
-	#ifdef __linux__
 	}
 
     // Export
     exportFrame();
-	#endif
 
 	#ifndef STANDALONE_PLAYER
     if (showUI) {
@@ -476,7 +458,6 @@ void ofApp::draw() {
             height - INFOBAR_HEIGHT / 2 + TIMELINE_FONT_SIZE / 2
         );
 
-    	#ifdef __linux__
         if (isPlaying) {
             if (isPreprocessing) {
                 palanquinRegular.drawString(
@@ -493,7 +474,6 @@ void ofApp::draw() {
                 );
             }
         }
-    	#endif
 
     	if (isAddingNewClip) {
     		palanquinRegular.drawString(
@@ -557,7 +537,6 @@ void ofApp::screenshot() {
     image.save("screenshot.png");
 }
 
-#ifdef __linux__
 void ofApp::exportFrame() {
     if (isExporting && isPlaying) {
         exportFbo.begin();
@@ -576,7 +555,6 @@ void ofApp::exportFrame() {
         fwrite(buffer.getData(), buffer.size(), 1, exportPipe);
     }
 }
-#endif
 #endif
 
 void ofApp::keyPressed(int key) {
@@ -600,7 +578,6 @@ void ofApp::keyPressed(int key) {
 	}
 
     if (key == ' ') {
-		#ifdef __linux__
         if (isPreprocessing || isExporting) {
             player.stop();
             isPlaying = false;
@@ -612,10 +589,9 @@ void ofApp::keyPressed(int key) {
         }
         else if (isExporting) {
             isExporting = false;
-            pclose(exportPipe);
+            _pclose(exportPipe);
         }
         else {
-		#endif
             if (isPlaying) {
 				player.stop();
             }
@@ -624,11 +600,8 @@ void ofApp::keyPressed(int key) {
 				player.setPositionMS((int)((timelineMarker / FPS) * 1000));
             }
 			isPlaying = !isPlaying;
-		#ifdef __linux__
         }
-	    #endif
     }
-	#ifdef __linux__
     else if (isPreprocessing || isExporting) {
         // Prevent the other keys from working while preprocessing or exporting
         return;
@@ -641,7 +614,6 @@ void ofApp::keyPressed(int key) {
         player.setPositionMS(0);
         player.play();
     }
-	#endif
 	// Change timing of clip
     else if (key == 't') {
         // Assume that the current playing clip is the one we want to change.

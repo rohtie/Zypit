@@ -50,13 +50,11 @@ class ofApp : public ofBaseApp {
         Clip* changingClip = NULL;
         float orgTime = 0.0;
 
-		#ifdef __linux__
         ofFbo exportFbo;
 		bool isPreprocessing = false;
 
 		FILE *exportPipe;
         bool isExporting = false;
-		#endif
 		#endif
 
         bool isFullscreen = false;
@@ -80,9 +78,7 @@ class ofApp : public ofBaseApp {
 
 		#ifndef STANDALONE_PLAYER
         void screenshot();
-		#ifdef __linux__
         void exportFrame();
-		#endif
 		#endif
 
         void keyPressed(int key);
@@ -95,3 +91,15 @@ class ofApp : public ofBaseApp {
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
 };
+
+#ifndef _WIN32
+inline int _pipe(int fildes[2], unsigned psize, int textmode) {
+   return pipe(fildes);
+}
+inline FILE* _popen(const char* command, const char* type) {
+   return popen(command, type);
+}
+inline void _pclose(FILE* file) {
+   pclose(file);
+}
+#endif

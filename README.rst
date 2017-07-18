@@ -28,7 +28,7 @@ S       Save project.
 F       Toggles whether the shader view should be constrained to 16:9 aspect ratio or not.
 L       Loop current playing clip.
 M       Mute music.
-E       Export project to a 1920x1080 HD mp4 video file (Linux only).
+E       Export project to a 1920x1080 HD mp4 video file.
 F10     Toggle UI
 F11     Toggle fullscreen
 F12     Take a screenshot with 3840x2160 4K resolution.
@@ -53,3 +53,13 @@ In the generated app directory execute the following:
 If you're running the binary from an IDE, make sure the current working directory is set to `./bin`.
 
 If you want to try out an example project, you can clone `Zypit Tech Demo <https://github.com/rohtie/Zypit-tech-demo>`_ to the ``bin/data/project/`` directory. Like this: ``git clone git@github.com:rohtie/Zypit-tech-demo.git bin/data/project``
+
+
+Export
+------
+
+To export the demo to video, you have to install ffmpeg.
+
+On linux ffmpeg needs to be in your path.
+
+On windows you need to put the statically linked `ffmpeg.exe` in the `./bin` directory.
