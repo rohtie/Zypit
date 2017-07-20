@@ -539,8 +539,15 @@ void ofApp::screenshot() {
 
 void ofApp::exportFrame() {
     if (isExporting && isPlaying) {
+        ofFbo largeExportFbo;
+        largeExportFbo.allocate(SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT);
+
+        largeExportFbo.begin();
+            render(largeExportFbo.getWidth(), largeExportFbo.getHeight());
+        largeExportFbo.end();
+
         exportFbo.begin();
-            render(exportFbo.getWidth(), exportFbo.getHeight());
+            largeExportFbo.draw(0, 0, exportFbo.getWidth(), exportFbo.getHeight());
         exportFbo.end();
 
         ofPixels pixels;
