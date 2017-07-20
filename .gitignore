@@ -15,7 +15,7 @@ Makefile
 
 
 obj/
-bin/data/project/
+bin/data/project*/
 
 buildLog
 runLog
@@ -23,7 +23,9 @@ runLog
 *.mp4
 *.png
 
+bin/zypit
 bin/Zypit
+bin/zypit_debug
 bin/Zypit_debug
 bin/data/.gitkeep
 bin/libs/
