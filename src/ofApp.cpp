@@ -302,27 +302,27 @@ void ofApp::update() {
                 ffmpeg <<
                     // thread_queue_size is raised to avoid discarded frames
                     // image2pipe makes ffmpeg accept images through the pipe
-                    "ffmpeg -thread_queue_size 512 -y -f image2pipe" <<
+                    "ffmpeg -y -thread_queue_size 512 -f image2pipe" <<
 
                     // Set resolution
                     " -s " << EXPORT_WIDTH << "x" << EXPORT_HEIGHT <<
 
                     // Set video input source to pipe at FPS rate
-                    " -r " << (int) FPS << " -i -" <<
+                    " -r " << (int) FPS << " -i pipe:.png" <<
 
                     // Set audio input source to mp3 file at FPS rate
                     " -r " << (int) FPS << " -i data/project/song.mp3" <<
 
                     // Set input image type to png and output video to x264
-                    " -vcodec png -c:v libx264" <<
+                    // 18 crf ensures a visually lossless quality
+                    " -c:v libx264 -crf 18" <<
 
                     // ffmpeg has to be set to experimental mode to allow mp3
                     // file to merged into the video output
-                    " -c:a aac -strict experimental" <<
+                    " -c:a aac" <<
 
-                    // Set output video at FPS rate
-                    // 18 crf ensures a visually lossless quality
-                    " -r " << (int) FPS << " -crf 18 -vn out.mp4";
+                    // -shortest ensures that the audio and video are the same length
+                    " -shortest out.mp4";
 
                 exportPipe = _popen(ffmpeg.str().c_str(), "w");
                 player.stop();
