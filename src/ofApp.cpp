@@ -355,64 +355,55 @@ void ofApp::update() {
 }
 
 void ofApp::draw() {
+	int x = 0;
+	int y = 0;
+
     int width = ofGetWidth();
     int height = ofGetHeight();
 
-    if (showUI) {
-        height -= TIMELINE_HEIGHT;
-    }
+	if (showUI) {
+		height -= TIMELINE_HEIGHT;
+	}
+
+	int shaderWidth = width;
+	int shaderHeight = height;
+
+	#ifndef STANDALONE_PLAYER
+	calculateRatio(shaderWidth, shaderHeight, x, y);
+	#endif
+
+	ofFbo* currentScreen = &main[currentFbo];
+	if (!currentScreen->isAllocated()) {
+		currentScreen->createAndAttachTexture(GL_RGB, 0);
+
+		#ifndef STANDALONE_PLAYER
+		currentScreen->allocate(shaderWidth, shaderHeight, GL_RGB, 0);
+		#else
+		currentScreen->allocate(demoWidth, demoHeight, GL_RGB, 0);
+		#endif
+	}
 
     // MAIN SCREEN
 	#ifndef STANDALONE_PLAYER
     if (!isPreprocessing && !isExporting) {
-		int x = 0;
-		int y = 0;
-
-		int shaderHeight = height;
-		int shaderWidth = width;
-
-		if (keepAspectRatio) {
-			if (shaderHeight > shaderWidth || shaderHeight * HEIGHT_TO_ASPECT_RATIO > shaderWidth) {
-				y += shaderHeight / 2;
-				shaderHeight = shaderWidth * WIDTH_TO_ASPECT_RATIO;
-				y -= shaderHeight / 2;
-			}
-			else if (shaderWidth > shaderHeight) {
-				x += shaderWidth / 2;
-				shaderWidth = shaderHeight * HEIGHT_TO_ASPECT_RATIO;
-				x -= shaderWidth / 2;
-			}
-
-			main.allocate(shaderWidth, shaderHeight);
-			main.begin();
-			render(shaderWidth, shaderHeight);
-			main.end();
-			main.draw(x, y);
-		}
-		else {
-	#endif
-            #ifndef STANDALONE_PLAYER
-            main.allocate(width, height);
-            main.begin();
-            render(width, height);
-            main.end();
-			main.draw(0, 0);
-            #else
-            main.allocate(demoWidth, demoHeight);
-            main.begin();
-            render(demoWidth, demoHeight);
-            main.end();
-            main.draw(0, 0, width, height);
-            #endif
-	#ifndef STANDALONE_PLAYER
-		}
-	#endif
+		currentScreen->begin();
+        render(currentScreen->getWidth(), currentScreen->getHeight());
+		currentScreen->end();
+		currentScreen->draw(x, y);
 	}
+	#else
+	currentScreen->begin();
+	render(demoWidth, demoHeight);
+	currentScreen->end();
+	currentScreen->draw(0, 0, width, height);
+	#endif
+
+	currentFbo = (currentFbo == 0) ? 1 : 0;
 
     // Export
-    exportFrame();
-
 	#ifndef STANDALONE_PLAYER
+	exportFrame();
+
     if (showUI) {
         // TIMELINE
         timeline.allocate(last->start + last->length, TIMELINE_HEIGHT);
@@ -506,7 +497,7 @@ void ofApp::render(int width, int height) {
     playing->shader.begin();
         playing->shader.setUniform1f("iGlobalTime", currentTime - (startTime - requestTime));
         playing->shader.setUniform2f("iResolution", width, height);
-
+		
         for (int i=0; i<4; i++) {
             if (playing->iChannel[i].isAllocated()) {
                 playing->shader.setUniformTexture("iChannel" + ofToString(i), playing->iChannel[i], i);
@@ -515,6 +506,11 @@ void ofApp::render(int width, int height) {
                 playing->shader.setUniformTexture("iChannel" + ofToString(playing->soundChannel), fftTexture, i);
             }
         }
+
+		ofFbo* previousScreen = &main[(currentFbo == 0) ? 1 : 0];
+		if (previousScreen->isAllocated()) {
+			playing->shader.setUniformTexture("previous", previousScreen->getTexture(0), 7);
+		}
 
         ofDrawRectangle(0, 0, width, height);
     playing->shader.end();
@@ -554,6 +550,21 @@ void ofApp::exportFrame() {
 
         fwrite(buffer.getData(), buffer.size(), 1, exportPipe);
     }
+}
+
+void ofApp::calculateRatio(int &width, int &height, int &x, int &y) {
+	if (keepAspectRatio) {
+		if (height > width || height * HEIGHT_TO_ASPECT_RATIO > width) {
+			y += height / 2;
+			height = width * WIDTH_TO_ASPECT_RATIO;
+			y -= height / 2;
+		}
+		else if (width > height) {
+			x += width / 2;
+			width = height * HEIGHT_TO_ASPECT_RATIO;
+			x -= width / 2;
+		}
+	}
 }
 #endif
 
@@ -755,6 +766,13 @@ void ofApp::mouseReleased(int x, int y, int button) {
 }
 
 void ofApp::windowResized(int w, int h) {
+	#ifndef STANDALONE_PLAYER
+	int x, y;
+	calculateRatio(w, h, x, y);
+
+	main[0].allocate(w, h, GL_RGB, 0);
+	main[1].allocate(w, h, GL_RGB, 0);
+	#endif
 }
 
 void ofApp::gotMessage(ofMessage msg) {
