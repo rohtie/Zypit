@@ -61,7 +61,8 @@ class ofApp : public ofBaseApp {
         bool showUI = true;
 
 
-        ofFbo main;
+        ofFbo main[2];
+		int currentFbo = 0;
 
 		ofApp(int _width, int _height);
 
@@ -79,6 +80,7 @@ class ofApp : public ofBaseApp {
 		#ifndef STANDALONE_PLAYER
         void screenshot();
         void exportFrame();
+		void calculateRatio(int &width, int &height, int &x, int &y);
 		#endif
 
         void keyPressed(int key);

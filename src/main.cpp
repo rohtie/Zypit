@@ -18,6 +18,7 @@ int main( ){
 	ofRunApp(new ofConfig(&demoSettings));
 
 	ofCreateWindow(demoSettings);
+	ofHideCursor();
 	ofRunApp(new ofApp(demoSettings.width, demoSettings.height));
 	#else
 	ofGLWindowSettings settings;
