@@ -296,6 +296,16 @@ void ofApp::update() {
                 isPreprocessing = false;
                 isExporting = true;
 
+
+                // Allocate framebuffers for export
+                main[0].createAndAttachTexture(GL_RGB, 0);
+                main[0].allocate(EXPORT_WIDTH, EXPORT_HEIGHT, GL_RGB, 0);
+                main[1].createAndAttachTexture(GL_RGB, 0);
+                main[1].allocate(EXPORT_WIDTH, EXPORT_HEIGHT, GL_RGB, 0);
+
+
+                string outputPath = "/media/rohtie/Storage/Demoscene/2018_solskogen/out.mp4";
+
                 // Open up a pipe to ffmpeg so that we can send PNG images to it
                 // which will be sequenced into a video file
                 stringstream ffmpeg;
@@ -315,14 +325,14 @@ void ofApp::update() {
 
                     // Set input image type to png and output video to x264
                     // 18 crf ensures a visually lossless quality
-                    " -c:v libx264 -crf 18" <<
+                    " -c:v libx264 -crf 18 -preset ultrafast" <<
 
                     // ffmpeg has to be set to experimental mode to allow mp3
                     // file to merged into the video output
-                    " -c:a aac" <<
+                    " -c:a aac -b:a 320k" <<
 
                     // -shortest ensures that the audio and video are the same length
-                    " -shortest out.mp4";
+                    " -shortest " << outputPath;
 
                 exportPipe = _popen(ffmpeg.str().c_str(), "w");
                 player.stop();
@@ -497,7 +507,7 @@ void ofApp::render(int width, int height) {
     playing->shader.begin();
         playing->shader.setUniform1f("iGlobalTime", currentTime - (startTime - requestTime));
         playing->shader.setUniform2f("iResolution", width, height);
-		
+
         for (int i=0; i<4; i++) {
             if (playing->iChannel[i].isAllocated()) {
                 playing->shader.setUniformTexture("iChannel" + ofToString(i), playing->iChannel[i], i);
@@ -535,19 +545,16 @@ void ofApp::screenshot() {
 
 void ofApp::exportFrame() {
     if (isExporting && isPlaying) {
-        ofFbo largeExportFbo;
-        largeExportFbo.allocate(SCREENSHOT_WIDTH, SCREENSHOT_HEIGHT);
+        ofFbo* currentScreen = &main[currentFbo];
+        currentFbo = (currentFbo == 0) ? 1 : 0;
 
-        largeExportFbo.begin();
-            render(largeExportFbo.getWidth(), largeExportFbo.getHeight());
-        largeExportFbo.end();
+        currentScreen->begin();
+        render(currentScreen->getWidth(), currentScreen->getHeight());
+        currentScreen->end();
 
-        exportFbo.begin();
-            largeExportFbo.draw(0, 0, exportFbo.getWidth(), exportFbo.getHeight());
-        exportFbo.end();
-
+        // Convert this frame to PNG image
         ofPixels pixels;
-        exportFbo.readToPixels(pixels);
+        currentScreen->readToPixels(pixels);
 
         ofImage image;
         image.setFromPixels(pixels);
@@ -555,6 +562,7 @@ void ofApp::exportFrame() {
         ofBuffer buffer;
         ofSaveImage(image.getPixels(), buffer);
 
+        // Pass current frame as PNG through the pipe to ffmpeg
         fwrite(buffer.getData(), buffer.size(), 1, exportPipe);
     }
 }
